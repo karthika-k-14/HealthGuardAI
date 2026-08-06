@@ -1,0 +1,16 @@
+{
+  "coverage": 84,
+  "missedVaccinations": 2140,
+  "upcomingDrives": [
+    { "id": "drv_1", "name": "Measles-Rubella Booster Camp", "area": "Ward 3", "date": "2026-07-09" },
+    { "id": "drv_2", "name": "DPT Catch-up Drive", "area": "Sulur", "date": "2026-07-12" },
+    { "id": "drv_3", "name": "Adult Booster Camp", "area": "RS Puram", "date": "2026-07-18" }
+  ],
+  "populationByAgeGroup": [
+    { "ageGroup": "0-1 yr", "covered": 91, "population": 42000 },
+    { "ageGroup": "1-5 yrs", "covered": 87, "population": 168000 },
+    { "ageGroup": "5-18 yrs", "covered": 82, "population": 610000 },
+    { "ageGroup": "18-60 yrs", "covered": 80, "population": 1980000 },
+    { "ageGroup": "60+ yrs", "covered": 76, "population": 458000 }
+  ]
+}

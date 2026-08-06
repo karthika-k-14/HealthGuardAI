@@ -1,0 +1,92 @@
+[
+  {
+    "id": "dz_dengue",
+    "name": "Dengue",
+    "activeCases": 412,
+    "recoveryRate": 91,
+    "riskLevel": "High",
+    "trend": [
+      { "week": "Wk 1", "cases": 220 },
+      { "week": "Wk 2", "cases": 260 },
+      { "week": "Wk 3", "cases": 310 },
+      { "week": "Wk 4", "cases": 350 },
+      { "week": "Wk 5", "cases": 390 },
+      { "week": "Wk 6", "cases": 412 }
+    ]
+  },
+  {
+    "id": "dz_malaria",
+    "name": "Malaria",
+    "activeCases": 268,
+    "recoveryRate": 94,
+    "riskLevel": "Medium",
+    "trend": [
+      { "week": "Wk 1", "cases": 240 },
+      { "week": "Wk 2", "cases": 255 },
+      { "week": "Wk 3", "cases": 230 },
+      { "week": "Wk 4", "cases": 260 },
+      { "week": "Wk 5", "cases": 250 },
+      { "week": "Wk 6", "cases": 268 }
+    ]
+  },
+  {
+    "id": "dz_covid",
+    "name": "COVID-19",
+    "activeCases": 74,
+    "recoveryRate": 98,
+    "riskLevel": "Low",
+    "trend": [
+      { "week": "Wk 1", "cases": 110 },
+      { "week": "Wk 2", "cases": 95 },
+      { "week": "Wk 3", "cases": 88 },
+      { "week": "Wk 4", "cases": 80 },
+      { "week": "Wk 5", "cases": 76 },
+      { "week": "Wk 6", "cases": 74 }
+    ]
+  },
+  {
+    "id": "dz_tb",
+    "name": "Tuberculosis",
+    "activeCases": 156,
+    "recoveryRate": 88,
+    "riskLevel": "Medium",
+    "trend": [
+      { "week": "Wk 1", "cases": 140 },
+      { "week": "Wk 2", "cases": 145 },
+      { "week": "Wk 3", "cases": 150 },
+      { "week": "Wk 4", "cases": 148 },
+      { "week": "Wk 5", "cases": 152 },
+      { "week": "Wk 6", "cases": 156 }
+    ]
+  },
+  {
+    "id": "dz_cholera",
+    "name": "Cholera",
+    "activeCases": 41,
+    "recoveryRate": 96,
+    "riskLevel": "Low",
+    "trend": [
+      { "week": "Wk 1", "cases": 30 },
+      { "week": "Wk 2", "cases": 34 },
+      { "week": "Wk 3", "cases": 38 },
+      { "week": "Wk 4", "cases": 36 },
+      { "week": "Wk 5", "cases": 40 },
+      { "week": "Wk 6", "cases": 41 }
+    ]
+  },
+  {
+    "id": "dz_typhoid",
+    "name": "Typhoid",
+    "activeCases": 63,
+    "recoveryRate": 93,
+    "riskLevel": "Medium",
+    "trend": [
+      { "week": "Wk 1", "cases": 50 },
+      { "week": "Wk 2", "cases": 55 },
+      { "week": "Wk 3", "cases": 58 },
+      { "week": "Wk 4", "cases": 60 },
+      { "week": "Wk 5", "cases": 61 },
+      { "week": "Wk 6", "cases": 63 }
+    ]
+  }
+]

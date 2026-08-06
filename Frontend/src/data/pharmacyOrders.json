@@ -1,0 +1,18 @@
+{
+  "new": [
+    { "id": "ord_101", "patient": "Kavitha R.", "items": 3, "total": 245, "time": "10 mins ago" },
+    { "id": "ord_102", "patient": "Suresh M.", "items": 1, "total": 60, "time": "22 mins ago" }
+  ],
+  "pending": [
+    { "id": "ord_098", "patient": "Anita D.", "items": 2, "total": 180, "time": "1 hour ago", "note": "Awaiting prescription verification" },
+    { "id": "ord_099", "patient": "Vignesh K.", "items": 4, "total": 610, "time": "2 hours ago", "note": "Payment pending" }
+  ],
+  "completed": [
+    { "id": "ord_090", "patient": "Meena S.", "items": 2, "total": 95, "date": "2026-07-04" },
+    { "id": "ord_091", "patient": "Ganesh P.", "items": 5, "total": 720, "date": "2026-07-04" },
+    { "id": "ord_092", "patient": "Divya N.", "items": 1, "total": 30, "date": "2026-07-03" }
+  ],
+  "cancelled": [
+    { "id": "ord_085", "patient": "Ramesh T.", "items": 2, "total": 150, "date": "2026-07-02", "reason": "Customer cancelled" }
+  ]
+}

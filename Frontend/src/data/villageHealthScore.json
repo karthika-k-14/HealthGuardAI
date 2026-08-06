@@ -1,0 +1,20 @@
+{
+  "villageName": "Periyanaickenpalayam",
+  "overallScore": 78,
+  "scoreBreakdown": [
+    { "label": "Immunization coverage", "value": 86 },
+    { "label": "ANC completion", "value": 74 },
+    { "label": "Sanitation access", "value": 70 },
+    { "label": "Disease surveillance", "value": 82 }
+  ],
+  "heatmap": [
+    { "zone": "Ward 1", "risk": 22 },
+    { "zone": "Ward 2", "risk": 41 },
+    { "zone": "Ward 3", "risk": 78 },
+    { "zone": "Ward 4", "risk": 35 },
+    { "zone": "Ward 5", "risk": 18 },
+    { "zone": "Ward 6", "risk": 52 },
+    { "zone": "Ward 7", "risk": 29 },
+    { "zone": "Ward 8", "risk": 44 }
+  ]
+}

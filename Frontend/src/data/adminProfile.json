@@ -1,0 +1,10 @@
+{
+  "accessLevel": "Full Platform Access",
+  "permissions": ["Read", "Write", "Update", "Delete", "Dashboard Access", "Report Access"],
+  "activitySummary": {
+    "actionsThisMonth": 64,
+    "usersManaged": 48620,
+    "campaignsPublished": 5,
+    "reportsGenerated": 22
+  }
+}

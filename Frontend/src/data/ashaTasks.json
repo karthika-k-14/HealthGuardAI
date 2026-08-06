@@ -1,0 +1,7 @@
+[
+  { "id": "task_001", "title": "Home visit — Kamala Bai (ANC checkup)", "time": "09:30 AM", "priority": "high", "done": false },
+  { "id": "task_002", "title": "Immunization follow-up — Ravi's daughter", "time": "11:00 AM", "priority": "medium", "done": false },
+  { "id": "task_003", "title": "Submit weekly surveillance report", "time": "02:00 PM", "priority": "medium", "done": false },
+  { "id": "task_004", "title": "Nutrition counseling — Selvi family", "time": "04:00 PM", "priority": "low", "done": true },
+  { "id": "task_005", "title": "Village health meeting", "time": "05:30 PM", "priority": "low", "done": false }
+]

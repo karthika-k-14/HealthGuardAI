@@ -1,0 +1,24 @@
+{
+  "caseCounts": [
+    { "disease": "Fever", "count7d": 18, "trend": "up" },
+    { "disease": "Dengue", "count7d": 6, "trend": "up" },
+    { "disease": "Malaria", "count7d": 3, "trend": "steady" },
+    { "disease": "TB", "count7d": 2, "trend": "steady" },
+    { "disease": "COVID", "count7d": 1, "trend": "down" },
+    { "disease": "Other", "count7d": 9, "trend": "steady" }
+  ],
+  "outbreakAlerts": [
+    {
+      "id": "ob_001",
+      "disease": "Dengue",
+      "severity": "high",
+      "area": "Periyanaickenpalayam Ward 3",
+      "message": "Cluster of 6 suspected dengue cases in the last 7 days — above threshold."
+    }
+  ],
+  "recentReports": [
+    { "id": "rep_001", "disease": "Dengue", "patientAgeGroup": "Adult", "reportedOn": "2026-07-03", "status": "under review" },
+    { "id": "rep_002", "disease": "Fever", "patientAgeGroup": "Child", "reportedOn": "2026-07-02", "status": "resolved" },
+    { "id": "rep_003", "disease": "TB", "patientAgeGroup": "Adult", "reportedOn": "2026-06-29", "status": "referred" }
+  ]
+}

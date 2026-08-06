@@ -1,0 +1,14 @@
+{
+  "today": [
+    { "id": "vis_001", "familyName": "Kamala Bai", "type": "ANC Checkup", "time": "09:30 AM", "status": "pending" },
+    { "id": "vis_002", "familyName": "Ravi Chandran", "type": "Immunization Follow-up", "time": "11:00 AM", "status": "pending" }
+  ],
+  "upcoming": [
+    { "id": "vis_003", "familyName": "Selvi Murugan", "type": "Nutrition Counseling", "date": "2026-07-06", "followUp": true },
+    { "id": "vis_004", "familyName": "Lakshmi Narayan", "type": "Elder Care Checkup", "date": "2026-07-08", "followUp": false }
+  ],
+  "completed": [
+    { "id": "vis_005", "familyName": "Ramesh Kumar", "type": "Routine Checkup", "date": "2026-06-28", "notes": "All members healthy, no concerns raised." },
+    { "id": "vis_006", "familyName": "Kamala Bai", "type": "First ANC Visit", "date": "2026-06-10", "notes": "Registered pregnancy, scheduled next visit." }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "userGrowth": [
+    { "month": "Feb", "users": 38200 },
+    { "month": "Mar", "users": 40500 },
+    { "month": "Apr", "users": 42800 },
+    { "month": "May", "users": 44900 },
+    { "month": "Jun", "users": 47100 },
+    { "month": "Jul", "users": 48620 }
+  ],
+  "diseaseTrends": [
+    { "month": "Feb", "cases": 1450 },
+    { "month": "Mar", "cases": 1620 },
+    { "month": "Apr", "cases": 1380 },
+    { "month": "May", "cases": 1710 },
+    { "month": "Jun", "cases": 1890 },
+    { "month": "Jul", "cases": 1560 }
+  ],
+  "campaignPerformance": [
+    { "name": "Dengue Prevention Week", "reach": 42000 },
+    { "name": "Seasonal Flu Awareness", "reach": 61500 },
+    { "name": "Blood Donation Camp", "reach": 3400 },
+    { "name": "Nutrition Support", "reach": 18500 }
+  ],
+  "hospitalPerformance": [
+    { "name": "Coimbatore District General", "occupancy": 79 },
+    { "name": "PSG Hospitals", "occupancy": 70 },
+    { "name": "Ganga Hospital", "occupancy": 88 },
+    { "name": "Sulur CHC", "occupancy": 92 }
+  ],
+  "aiUsage": [
+    { "week": "Wk 1", "interactions": 18400 },
+    { "week": "Wk 2", "interactions": 20100 },
+    { "week": "Wk 3", "interactions": 19200 },
+    { "week": "Wk 4", "interactions": 22600 }
+  ],
+  "platformActivity": [
+    { "name": "Citizens", "value": 42 },
+    { "name": "ASHA Workers", "value": 18 },
+    { "name": "Pharmacists", "value": 14 },
+    { "name": "Health Officers", "value": 12 },
+    { "name": "Admins", "value": 4 },
+    { "name": "Guests", "value": 10 }
+  ]
+}

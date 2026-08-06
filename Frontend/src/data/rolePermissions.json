@@ -1,0 +1,27 @@
+[
+  {
+    "role": "citizen",
+    "label": "Citizen",
+    "permissions": { "read": true, "write": true, "update": false, "delete": false, "dashboardAccess": true, "reportAccess": false }
+  },
+  {
+    "role": "asha",
+    "label": "ASHA Worker",
+    "permissions": { "read": true, "write": true, "update": true, "delete": false, "dashboardAccess": true, "reportAccess": true }
+  },
+  {
+    "role": "pharmacist",
+    "label": "Pharmacist",
+    "permissions": { "read": true, "write": true, "update": true, "delete": true, "dashboardAccess": true, "reportAccess": true }
+  },
+  {
+    "role": "officer",
+    "label": "Health Officer",
+    "permissions": { "read": true, "write": true, "update": true, "delete": true, "dashboardAccess": true, "reportAccess": true }
+  },
+  {
+    "role": "admin",
+    "label": "Administrator",
+    "permissions": { "read": true, "write": true, "update": true, "delete": true, "dashboardAccess": true, "reportAccess": true }
+  }
+]

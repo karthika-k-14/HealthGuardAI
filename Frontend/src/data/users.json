@@ -1,0 +1,50 @@
+{
+  "citizen": {
+    "id": "usr_citizen_01",
+    "name": "Ananya Sharma",
+    "email": "citizen@healthguard.in",
+    "role": "citizen",
+    "avatar": null,
+    "location": "Coimbatore, Tamil Nadu",
+    "phone": "+91 98765 43210"
+  },
+  "asha": {
+    "id": "usr_asha_01",
+    "name": "Lakshmi Devi",
+    "email": "asha@healthguard.in",
+    "role": "asha",
+    "avatar": null,
+    "assignedVillage": "Periyanaickenpalayam",
+    "district": "Coimbatore",
+    "phone": "+91 98765 11223"
+  },
+  "pharmacist": {
+    "id": "usr_pharma_01",
+    "name": "Rahul Menon",
+    "email": "pharmacist@healthguard.in",
+    "role": "pharmacist",
+    "avatar": null,
+    "pharmacyName": "CareWell Pharmacy",
+    "licenseNo": "TN-PH-88213",
+    "phone": "+91 98765 33445"
+  },
+  "officer": {
+    "id": "usr_officer_01",
+    "name": "Dr. Priya Raghunathan",
+    "email": "officer@healthguard.in",
+    "role": "officer",
+    "avatar": null,
+    "designation": "District Health Officer",
+    "jurisdiction": "Coimbatore District",
+    "phone": "+91 98765 55667"
+  },
+  "admin": {
+    "id": "usr_admin_01",
+    "name": "System Administrator",
+    "email": "admin@healthguard.com",
+    "role": "admin",
+    "avatar": null,
+    "accessLevel": "Full Platform Access",
+    "phone": "+91 98765 77889"
+  }
+}

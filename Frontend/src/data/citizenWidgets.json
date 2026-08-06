@@ -1,0 +1,174 @@
+{
+  "dailyChallenge": {
+    "title": "Walk 8,000 steps today",
+    "progress": 5400,
+    "target": 8000,
+    "reward": "+20 wellness points"
+  },
+  "moodOptions": [
+    {
+      "id": "great",
+      "label": "Great",
+      "emoji": "\ud83d\ude04"
+    },
+    {
+      "id": "good",
+      "label": "Good",
+      "emoji": "\ud83d\ude42"
+    },
+    {
+      "id": "okay",
+      "label": "Okay",
+      "emoji": "\ud83d\ude10"
+    },
+    {
+      "id": "low",
+      "label": "Low",
+      "emoji": "\ud83d\ude14"
+    },
+    {
+      "id": "stressed",
+      "label": "Stressed",
+      "emoji": "\ud83d\ude23"
+    }
+  ],
+  "moodHistory": [
+    {
+      "day": "Mon",
+      "mood": "good"
+    },
+    {
+      "day": "Tue",
+      "mood": "great"
+    },
+    {
+      "day": "Wed",
+      "mood": "okay"
+    },
+    {
+      "day": "Thu",
+      "mood": "good"
+    },
+    {
+      "day": "Fri",
+      "mood": "stressed"
+    },
+    {
+      "day": "Sat",
+      "mood": "great"
+    },
+    {
+      "day": "Sun",
+      "mood": "good"
+    }
+  ],
+  "waterIntake": {
+    "current": 1.6,
+    "target": 2.5,
+    "unit": "L"
+  },
+  "stepCounter": {
+    "current": 5400,
+    "target": 8000
+  },
+  "nutritionTips": [
+    "Add a serving of leafy greens to your next meal for an iron boost.",
+    "Swap one sugary drink today for water or buttermilk.",
+    "Include a protein source at breakfast to stay fuller for longer.",
+    "A handful of nuts makes a better snack than fried options."
+  ],
+  "badges": [
+    {
+      "id": "badge_hydration",
+      "label": "Hydration Hero",
+      "icon": "Droplets",
+      "earned": true
+    },
+    {
+      "id": "badge_steps",
+      "label": "10K Streak",
+      "icon": "Footprints",
+      "earned": true
+    },
+    {
+      "id": "badge_sleep",
+      "label": "Sleep Champion",
+      "icon": "Moon",
+      "earned": false
+    },
+    {
+      "id": "badge_checkup",
+      "label": "Check-up Complete",
+      "icon": "Stethoscope",
+      "earned": true
+    },
+    {
+      "id": "badge_vaccine",
+      "label": "Fully Vaccinated",
+      "icon": "Syringe",
+      "earned": false
+    }
+  ],
+  "weeklyReport": {
+    "summary": "You were more active this week with a 12% rise in average steps, though sleep dipped on Friday.",
+    "highlights": [
+      {
+        "label": "Avg. steps/day",
+        "value": "7,371",
+        "trend": "up"
+      },
+      {
+        "label": "Avg. sleep",
+        "value": "7.2 hrs",
+        "trend": "flat"
+      },
+      {
+        "label": "Water goal met",
+        "value": "4/7 days",
+        "trend": "down"
+      }
+    ]
+  },
+  "wellnessTips": [
+    "Take a 5-minute stretch break every hour if you sit for long periods.",
+    "Morning sunlight exposure for 10 minutes can help regulate your sleep cycle.",
+    "Deep breathing for 2 minutes can lower stress before a big task.",
+    "Consistent sleep and wake times matter more than total hours some nights."
+  ],
+  "healthCalendar": [
+    {
+      "date": "2026-07-06",
+      "label": "Doctor follow-up",
+      "type": "appointment"
+    },
+    {
+      "date": "2026-07-09",
+      "label": "MMR vaccination due",
+      "type": "vaccination"
+    },
+    {
+      "date": "2026-07-12",
+      "label": "Blood test",
+      "type": "checkup"
+    },
+    {
+      "date": "2026-07-20",
+      "label": "Dengue awareness camp",
+      "type": "campaign"
+    }
+  ],
+  "healthStreak": {
+    "currentStreak": 6,
+    "longestStreak": 14,
+    "streakGoal": 7,
+    "last7Days": [
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true
+    ]
+  }
+}

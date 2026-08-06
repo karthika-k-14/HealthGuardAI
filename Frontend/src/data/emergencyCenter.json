@@ -1,0 +1,17 @@
+{
+  "outbreakAlerts": [
+    { "id": "eob_1", "disease": "Dengue", "area": "Ward 3 - Periyanaickenpalayam", "severity": "High", "reportedCases": 78 },
+    { "id": "eob_2", "disease": "Cholera", "area": "Singanallur", "severity": "Medium", "reportedCases": 22 }
+  ],
+  "ambulanceRequests": [
+    { "id": "amb_1", "location": "Sulur Community Health Centre", "status": "Dispatched", "requestedAt": "2026-07-05T09:12:00+05:30" },
+    { "id": "amb_2", "location": "Ward 9 - Singanallur", "status": "Pending", "requestedAt": "2026-07-05T10:05:00+05:30" }
+  ],
+  "medicineShortages": [
+    { "id": "sh_1", "medicine": "ORS Sachets", "facility": "Periyanaickenpalayam PHC", "severity": "Medium" },
+    { "id": "sh_2", "medicine": "Insulin Glargine", "facility": "Sulur Community Health Centre", "severity": "High" }
+  ],
+  "disasterAlerts": [
+    { "id": "dis_1", "type": "Heavy Rain Advisory", "area": "Entire District", "issuedOn": "2026-07-04", "status": "Active" }
+  ]
+}

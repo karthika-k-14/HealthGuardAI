@@ -1,0 +1,98 @@
+[
+  {
+    "id": "inv_001",
+    "name": "Paracetamol 500mg",
+    "category": "Pain Relief",
+    "manufacturer": "Cipla Ltd.",
+    "batchNumber": "PCM-2410-A",
+    "quantity": 420,
+    "unit": "tablets",
+    "expiryDate": "2027-03-15",
+    "stockStatus": "In Stock",
+    "price": 2.5
+  },
+  {
+    "id": "inv_002",
+    "name": "Amoxicillin 250mg",
+    "category": "Antibiotic",
+    "manufacturer": "Sun Pharma",
+    "batchNumber": "AMX-2312-B",
+    "quantity": 18,
+    "unit": "capsules",
+    "expiryDate": "2026-08-10",
+    "stockStatus": "Low Stock",
+    "price": 6.0
+  },
+  {
+    "id": "inv_003",
+    "name": "Cetirizine 10mg",
+    "category": "Antihistamine",
+    "manufacturer": "Dr. Reddy's",
+    "batchNumber": "CTZ-2405-C",
+    "quantity": 8,
+    "unit": "tablets",
+    "expiryDate": "2026-07-20",
+    "stockStatus": "Low Stock",
+    "price": 1.8
+  },
+  {
+    "id": "inv_004",
+    "name": "ORS Sachets",
+    "category": "Rehydration",
+    "manufacturer": "FDC Ltd.",
+    "batchNumber": "ORS-2403-D",
+    "quantity": 260,
+    "unit": "sachets",
+    "expiryDate": "2028-01-01",
+    "stockStatus": "In Stock",
+    "price": 12.0
+  },
+  {
+    "id": "inv_005",
+    "name": "Azithromycin 500mg",
+    "category": "Antibiotic",
+    "manufacturer": "Cipla Ltd.",
+    "batchNumber": "AZM-2311-E",
+    "quantity": 0,
+    "unit": "tablets",
+    "expiryDate": "2026-07-08",
+    "stockStatus": "Out of Stock",
+    "price": 14.5
+  },
+  {
+    "id": "inv_006",
+    "name": "Ibuprofen 400mg",
+    "category": "Anti-inflammatory",
+    "manufacturer": "Sun Pharma",
+    "batchNumber": "IBU-2409-F",
+    "quantity": 150,
+    "unit": "tablets",
+    "expiryDate": "2026-07-25",
+    "stockStatus": "In Stock",
+    "price": 3.2
+  },
+  {
+    "id": "inv_007",
+    "name": "Insulin Glargine",
+    "category": "Diabetes Care",
+    "manufacturer": "Biocon",
+    "batchNumber": "INS-2402-G",
+    "quantity": 12,
+    "unit": "vials",
+    "expiryDate": "2026-07-15",
+    "stockStatus": "Low Stock",
+    "price": 480
+  },
+  {
+    "id": "inv_008",
+    "name": "Vitamin D3 Chewable",
+    "category": "Supplement",
+    "manufacturer": "Abbott",
+    "batchNumber": "VTD-2406-H",
+    "quantity": 95,
+    "unit": "tablets",
+    "expiryDate": "2025-12-30",
+    "stockStatus": "Expired",
+    "price": 5.5
+  }
+]

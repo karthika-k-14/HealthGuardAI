@@ -1,0 +1,30 @@
+[
+  {
+    "id": "test_001",
+    "name": "Meera Krishnan",
+    "role": "Citizen, Coimbatore",
+    "rating": 5,
+    "quote": "The dengue alert reached me two days before my neighborhood's outbreak was in the news. That's a first."
+  },
+  {
+    "id": "test_002",
+    "name": "Lakshmi Devi",
+    "role": "ASHA Worker",
+    "rating": 5,
+    "quote": "Field reporting used to take me an hour of paperwork. Now it takes minutes, and officers see it instantly."
+  },
+  {
+    "id": "test_003",
+    "name": "Dr. Arvind Iyer",
+    "role": "District Health Officer",
+    "rating": 4,
+    "quote": "Having pharmacy-level and field-level signals in one dashboard changed how fast we can act."
+  },
+  {
+    "id": "test_004",
+    "name": "Rahul Menon",
+    "role": "Pharmacist",
+    "rating": 5,
+    "quote": "Flagging unusual demand for fever medication helped catch a cluster before it spread further."
+  }
+]

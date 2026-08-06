@@ -1,0 +1,89 @@
+{
+  "categories": ["All", "Vector-borne", "Respiratory", "Waterborne", "Seasonal", "Chronic"],
+  "diseases": [
+    {
+      "id": "dis_dengue",
+      "name": "Dengue",
+      "category": "Vector-borne",
+      "trending": true,
+      "riskLevel": "High",
+      "severity": "High",
+      "icon": "Bug",
+      "summary": "A mosquito-borne viral infection causing high fever, rash, and joint pain.",
+      "symptoms": ["High fever", "Severe headache", "Joint and muscle pain", "Skin rash", "Nausea"],
+      "prevention": ["Remove standing water near homes", "Use mosquito repellent", "Wear long sleeves at dawn/dusk", "Use bed nets"],
+      "treatment": "No specific antiviral treatment — focuses on fluids, rest, and fever management. Seek medical care if bleeding or severe abdominal pain occurs.",
+      "cases7d": 412
+    },
+    {
+      "id": "dis_malaria",
+      "name": "Malaria",
+      "category": "Vector-borne",
+      "trending": true,
+      "riskLevel": "Medium",
+      "severity": "Medium",
+      "icon": "Bug",
+      "summary": "Spread by infected mosquitoes, causing fever, chills, and fatigue.",
+      "symptoms": ["Cyclical fever", "Chills and sweating", "Fatigue", "Headache", "Nausea"],
+      "prevention": ["Sleep under insecticide-treated nets", "Use indoor spraying", "Drain stagnant water", "Take prophylaxis if travelling to high-risk areas"],
+      "treatment": "Antimalarial medication prescribed based on parasite species — early diagnosis via blood test is critical.",
+      "cases7d": 268
+    },
+    {
+      "id": "dis_influenza",
+      "name": "Seasonal Influenza",
+      "category": "Respiratory",
+      "trending": true,
+      "riskLevel": "Medium",
+      "severity": "Low",
+      "icon": "Wind",
+      "summary": "A contagious respiratory illness common during seasonal transitions.",
+      "symptoms": ["Fever", "Sore throat", "Cough", "Body aches", "Runny nose"],
+      "prevention": ["Annual flu vaccination", "Frequent handwashing", "Avoid close contact with sick individuals", "Cover coughs and sneezes"],
+      "treatment": "Rest, fluids, and over-the-counter fever relief. Antivirals may help if started within 48 hours for high-risk patients.",
+      "cases7d": 355
+    },
+    {
+      "id": "dis_cholera",
+      "name": "Cholera",
+      "category": "Waterborne",
+      "trending": false,
+      "riskLevel": "Low",
+      "severity": "High",
+      "icon": "Droplets",
+      "summary": "A waterborne bacterial infection causing severe diarrhea and dehydration.",
+      "symptoms": ["Watery diarrhea", "Vomiting", "Rapid dehydration", "Muscle cramps"],
+      "prevention": ["Drink only treated/boiled water", "Wash hands with soap", "Avoid raw or undercooked food", "Proper sanitation"],
+      "treatment": "Oral rehydration salts are the priority; severe cases require IV fluids and antibiotics.",
+      "cases7d": 41
+    },
+    {
+      "id": "dis_tb",
+      "name": "Tuberculosis",
+      "category": "Chronic",
+      "trending": false,
+      "riskLevel": "Medium",
+      "severity": "Medium",
+      "icon": "Activity",
+      "summary": "A bacterial infection primarily affecting the lungs, treatable with early detection.",
+      "symptoms": ["Persistent cough (3+ weeks)", "Coughing blood", "Weight loss", "Night sweats", "Fatigue"],
+      "prevention": ["BCG vaccination in childhood", "Good ventilation", "Early screening for close contacts", "Complete full treatment course if diagnosed"],
+      "treatment": "A 6+ month course of combination antibiotics under the national TB program — completing the full course is essential.",
+      "cases7d": 96
+    },
+    {
+      "id": "dis_heatstroke",
+      "name": "Heat-related Illness",
+      "category": "Seasonal",
+      "trending": false,
+      "riskLevel": "Medium",
+      "severity": "Medium",
+      "icon": "Sun",
+      "summary": "Heat exhaustion and heatstroke risk rising with summer temperatures.",
+      "symptoms": ["High body temperature", "Confusion", "Rapid pulse", "Dry or flushed skin", "Dizziness"],
+      "prevention": ["Stay hydrated", "Avoid peak-sun outdoor work", "Wear light clothing", "Take breaks in shade or cool areas"],
+      "treatment": "Move to a cool area, hydrate, and cool the body with damp cloths. Seek emergency care for confusion or loss of consciousness.",
+      "cases7d": 74
+    }
+  ]
+}

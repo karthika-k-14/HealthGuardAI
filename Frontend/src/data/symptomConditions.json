@@ -1,0 +1,47 @@
+[
+  {
+    "id": "cond_dengue",
+    "name": "Dengue",
+    "symptoms": ["Fever", "Headache", "Joint pain", "Rash", "Fatigue"],
+    "riskLevel": "High",
+    "homeCareTips": ["Rest and stay hydrated", "Take paracetamol for fever (avoid ibuprofen/aspirin)", "Monitor for warning signs like bleeding or severe abdominal pain"],
+    "recommendedDoctor": "General Physician / Infectious Disease Specialist",
+    "emergencyWarning": "Seek immediate care if you notice bleeding, persistent vomiting, or severe abdominal pain."
+  },
+  {
+    "id": "cond_malaria",
+    "name": "Malaria",
+    "symptoms": ["Fever", "Chills", "Fatigue", "Headache", "Nausea"],
+    "riskLevel": "Medium",
+    "homeCareTips": ["Stay hydrated", "Rest in a cool environment", "Take prescribed antimalarials only after diagnosis"],
+    "recommendedDoctor": "General Physician",
+    "emergencyWarning": "Seek immediate care if fever is very high or you experience confusion."
+  },
+  {
+    "id": "cond_migraine",
+    "name": "Migraine",
+    "symptoms": ["Headache", "Nausea", "Sensitivity to light", "Fatigue"],
+    "riskLevel": "Low",
+    "homeCareTips": ["Rest in a dark, quiet room", "Stay hydrated", "Consider over-the-counter pain relief"],
+    "recommendedDoctor": "Neurologist (if frequent or severe)",
+    "emergencyWarning": "Seek immediate care for a sudden, severe headache unlike any before, or with vision changes."
+  },
+  {
+    "id": "cond_flu",
+    "name": "Seasonal Influenza",
+    "symptoms": ["Fever", "Cough", "Sore throat", "Body aches", "Fatigue"],
+    "riskLevel": "Low",
+    "homeCareTips": ["Rest and fluids", "Steam inhalation for congestion", "Paracetamol for fever and aches"],
+    "recommendedDoctor": "General Physician",
+    "emergencyWarning": "Seek immediate care for difficulty breathing or chest pain."
+  },
+  {
+    "id": "cond_gastro",
+    "name": "Gastroenteritis",
+    "symptoms": ["Nausea", "Diarrhea", "Abdominal pain", "Fatigue"],
+    "riskLevel": "Medium",
+    "homeCareTips": ["Oral rehydration solution", "Bland diet (rice, bananas, toast)", "Avoid dairy and oily food temporarily"],
+    "recommendedDoctor": "General Physician",
+    "emergencyWarning": "Seek immediate care for signs of severe dehydration or blood in stool."
+  }
+]

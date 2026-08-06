@@ -1,0 +1,62 @@
+[
+  {
+    "id": "hmg_001",
+    "name": "Coimbatore District General Hospital",
+    "type": "Government",
+    "totalBeds": 450,
+    "availableBeds": 96,
+    "icuBeds": 40,
+    "icuAvailable": 6,
+    "doctors": 82,
+    "ambulances": 12,
+    "emergencyStatus": "Operational"
+  },
+  {
+    "id": "hmg_002",
+    "name": "PSG Hospitals",
+    "type": "Private",
+    "totalBeds": 700,
+    "availableBeds": 210,
+    "icuBeds": 60,
+    "icuAvailable": 18,
+    "doctors": 145,
+    "ambulances": 20,
+    "emergencyStatus": "Operational"
+  },
+  {
+    "id": "hmg_003",
+    "name": "Ganga Hospital",
+    "type": "Private",
+    "totalBeds": 500,
+    "availableBeds": 58,
+    "icuBeds": 45,
+    "icuAvailable": 3,
+    "doctors": 110,
+    "ambulances": 15,
+    "emergencyStatus": "Near Capacity"
+  },
+  {
+    "id": "hmg_004",
+    "name": "Periyanaickenpalayam PHC",
+    "type": "Primary Health Centre",
+    "totalBeds": 30,
+    "availableBeds": 4,
+    "icuBeds": 0,
+    "icuAvailable": 0,
+    "doctors": 6,
+    "ambulances": 2,
+    "emergencyStatus": "Operational"
+  },
+  {
+    "id": "hmg_005",
+    "name": "Sulur Community Health Centre",
+    "totalBeds": 60,
+    "type": "Government",
+    "availableBeds": 5,
+    "icuBeds": 8,
+    "icuAvailable": 0,
+    "doctors": 14,
+    "ambulances": 3,
+    "emergencyStatus": "Critical"
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "rx_001",
+    "patientName": "Anita Desai",
+    "patientAge": 34,
+    "uploadedAt": "2026-07-05T08:30:00+05:30",
+    "medicines": [
+      "Amoxicillin 250mg",
+      "Paracetamol 500mg"
+    ],
+    "status": "pending",
+    "aiVerification": {
+      "confidence": 91,
+      "result": "Looks consistent with a bacterial infection treatment course.",
+      "flags": []
+    },
+    "referredBy": "Dr. Vivek Nair"
+  },
+  {
+    "id": "rx_002",
+    "patientName": "Vignesh Kumar",
+    "patientAge": 45,
+    "uploadedAt": "2026-07-05T07:10:00+05:30",
+    "medicines": [
+      "Insulin Glargine",
+      "Vitamin D3 Chewable"
+    ],
+    "status": "pending",
+    "aiVerification": {
+      "confidence": 74,
+      "result": "Dosage frequency unclear on the uploaded image \u2014 verify manually.",
+      "flags": [
+        "Unclear dosage frequency"
+      ]
+    },
+    "referredBy": "Dr. Shalini Rao"
+  },
+  {
+    "id": "rx_003",
+    "patientName": "Meena Subramaniam",
+    "patientAge": 29,
+    "uploadedAt": "2026-07-04T16:45:00+05:30",
+    "medicines": [
+      "Cetirizine 10mg"
+    ],
+    "status": "approved",
+    "aiVerification": {
+      "confidence": 96,
+      "result": "Standard antihistamine prescription, no concerns.",
+      "flags": []
+    },
+    "referredBy": "Dr. Arvind Iyer"
+  }
+]

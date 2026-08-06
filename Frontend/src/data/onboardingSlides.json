@@ -1,0 +1,32 @@
+[
+  {
+    "id": "ob_ai_healthcare",
+    "icon": "BrainCircuit",
+    "title": "AI Healthcare, guided simply",
+    "description": "Ask questions in plain language and get clear, guided health information whenever you need it."
+  },
+  {
+    "id": "ob_disease_awareness",
+    "icon": "BookOpen",
+    "title": "Stay ahead of outbreaks",
+    "description": "See what's trending in your district and learn prevention steps before an outbreak reaches you."
+  },
+  {
+    "id": "ob_hospital_locator",
+    "icon": "MapPinned",
+    "title": "Find care nearby",
+    "description": "Locate the closest hospitals and health centres, with real-time facility details."
+  },
+  {
+    "id": "ob_schemes",
+    "icon": "Landmark",
+    "title": "Know your government schemes",
+    "description": "Discover health schemes you may be eligible for, explained without the jargon."
+  },
+  {
+    "id": "ob_emergency",
+    "icon": "Siren",
+    "title": "Help, one tap away",
+    "description": "Reach emergency assistance quickly when every second counts."
+  }
+]

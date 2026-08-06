@@ -1,0 +1,50 @@
+[
+  {
+    "id": "feat_chatbot",
+    "icon": "MessageCircle",
+    "title": "AI Chatbot",
+    "description": "Ask health questions in plain language and get guided, easy-to-understand answers any time."
+  },
+  {
+    "id": "feat_awareness",
+    "icon": "BookOpen",
+    "title": "Disease Awareness",
+    "description": "Stay ahead of seasonal outbreaks with clear, verified prevention and symptom guidance."
+  },
+  {
+    "id": "feat_hospitals",
+    "icon": "Hospital",
+    "title": "Nearby Hospitals",
+    "description": "Find the closest government and private facilities, with bed and specialty information."
+  },
+  {
+    "id": "feat_vaccination",
+    "icon": "Syringe",
+    "title": "Vaccination Tracker",
+    "description": "Never miss a dose — track upcoming and completed vaccinations for your whole family."
+  },
+  {
+    "id": "feat_emergency",
+    "icon": "Siren",
+    "title": "Emergency Assistance",
+    "description": "One tap to reach nearby emergency services and share your live location."
+  },
+  {
+    "id": "feat_medicine",
+    "icon": "Pill",
+    "title": "Medicine Guide",
+    "description": "Understand what a prescribed medicine does, common dosages, and interactions to flag with a doctor."
+  },
+  {
+    "id": "feat_schemes",
+    "icon": "Landmark",
+    "title": "Government Schemes",
+    "description": "Browse health schemes you're eligible for, with plain-language eligibility criteria."
+  },
+  {
+    "id": "feat_reports",
+    "icon": "BarChart3",
+    "title": "AI Health Reports",
+    "description": "Turn routine check-ups into a simple trend report you can share with your doctor."
+  }
+]

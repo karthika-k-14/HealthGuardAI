@@ -1,0 +1,10 @@
+[
+  { "id": "log_001", "type": "Login", "actor": "Dr. Priya Raghunathan", "detail": "Logged in from Coimbatore, IN", "timestamp": "2026-07-05T08:00:00+05:30" },
+  { "id": "log_002", "type": "Admin Action", "actor": "System Administrator", "detail": "Disabled account for Kavya Reddy", "timestamp": "2026-07-05T07:40:00+05:30" },
+  { "id": "log_003", "type": "Campaign Update", "actor": "System Administrator", "detail": "Published \"District Blood Donation Camp\" campaign", "timestamp": "2026-07-04T15:20:00+05:30" },
+  { "id": "log_004", "type": "System Change", "actor": "System Administrator", "detail": "Updated role permissions for Pharmacist", "timestamp": "2026-07-04T11:05:00+05:30" },
+  { "id": "log_005", "type": "User Activity", "actor": "Rahul Menon", "detail": "Verified 3 prescriptions", "timestamp": "2026-07-04T09:30:00+05:30" },
+  { "id": "log_006", "type": "Login", "actor": "Lakshmi Devi", "detail": "Logged in from Coimbatore, IN", "timestamp": "2026-07-04T07:50:00+05:30" },
+  { "id": "log_007", "type": "Admin Action", "actor": "Divya Nair", "detail": "Added new hospital record: Apollo Pharmacy Saravanampatti", "timestamp": "2026-07-03T14:10:00+05:30" },
+  { "id": "log_008", "type": "System Change", "actor": "System Administrator", "detail": "Ran scheduled database backup", "timestamp": "2026-07-03T02:00:00+05:30" }
+]

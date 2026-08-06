@@ -1,0 +1,48 @@
+[
+  {
+    "id": "child_001",
+    "name": "Meena (Ravi Chandran's daughter)",
+    "ageMonths": 14,
+    "weightKg": 8.9,
+    "heightCm": 74,
+    "growth": [
+      { "ageMonths": 6, "weightKg": 6.8 },
+      { "ageMonths": 9, "weightKg": 7.6 },
+      { "ageMonths": 12, "weightKg": 8.4 },
+      { "ageMonths": 14, "weightKg": 8.9 }
+    ],
+    "immunizationStatus": "Due for MMR",
+    "nutritionStatus": "Normal",
+    "upcomingVaccinations": [{ "vaccine": "MMR", "dueDate": "2026-07-09" }]
+  },
+  {
+    "id": "child_002",
+    "name": "Arjun (Selvi Murugan's son)",
+    "ageMonths": 30,
+    "weightKg": 11.2,
+    "heightCm": 88,
+    "growth": [
+      { "ageMonths": 18, "weightKg": 9.5 },
+      { "ageMonths": 24, "weightKg": 10.3 },
+      { "ageMonths": 30, "weightKg": 11.2 }
+    ],
+    "immunizationStatus": "Up to date",
+    "nutritionStatus": "Mild underweight — counseling ongoing",
+    "upcomingVaccinations": [{ "vaccine": "DPT Booster", "dueDate": "2026-09-01" }]
+  },
+  {
+    "id": "child_003",
+    "name": "Divya (Ramesh Kumar's daughter)",
+    "ageMonths": 6,
+    "weightKg": 6.9,
+    "heightCm": 63,
+    "growth": [
+      { "ageMonths": 2, "weightKg": 4.8 },
+      { "ageMonths": 4, "weightKg": 5.9 },
+      { "ageMonths": 6, "weightKg": 6.9 }
+    ],
+    "immunizationStatus": "Up to date",
+    "nutritionStatus": "Normal",
+    "upcomingVaccinations": [{ "vaccine": "Rotavirus dose 3", "dueDate": "2026-07-20" }]
+  }
+]

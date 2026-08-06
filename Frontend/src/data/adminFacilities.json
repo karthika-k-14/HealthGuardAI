@@ -1,0 +1,10 @@
+[
+  { "id": "afac_001", "name": "Coimbatore District General Hospital", "type": "Hospital", "capacity": 450, "beds": 450, "staff": 210, "status": "Operational" },
+  { "id": "afac_002", "name": "PSG Hospitals", "type": "Hospital", "capacity": 700, "beds": 700, "staff": 340, "status": "Operational" },
+  { "id": "afac_003", "name": "Ganga Hospital", "type": "Hospital", "capacity": 500, "beds": 500, "staff": 260, "status": "Near Capacity" },
+  { "id": "afac_004", "name": "Periyanaickenpalayam PHC", "type": "PHC", "capacity": 30, "beds": 30, "staff": 18, "status": "Operational" },
+  { "id": "afac_005", "name": "Sulur Community Health Centre", "type": "PHC", "capacity": 60, "beds": 60, "staff": 24, "status": "Critical" },
+  { "id": "afac_006", "name": "CareWell Pharmacy", "type": "Pharmacy", "capacity": null, "beds": null, "staff": 4, "status": "Operational" },
+  { "id": "afac_007", "name": "MedPlus RS Puram", "type": "Pharmacy", "capacity": null, "beds": null, "staff": 3, "status": "Operational" },
+  { "id": "afac_008", "name": "Apollo Pharmacy Saravanampatti", "type": "Pharmacy", "capacity": null, "beds": null, "staff": 5, "status": "Operational" }
+]

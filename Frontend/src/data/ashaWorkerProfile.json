@@ -1,0 +1,20 @@
+{
+  "assignedArea": {
+    "village": "Periyanaickenpalayam",
+    "district": "Coimbatore",
+    "householdsCovered": 142,
+    "population": 618
+  },
+  "performance": {
+    "visitsThisMonth": 46,
+    "visitTarget": 50,
+    "familiesCovered": 5,
+    "reportsSubmitted": 12,
+    "onTimeRate": 92
+  },
+  "achievements": [
+    { "id": "ach_001", "title": "100% ANC follow-up", "description": "Completed all scheduled ANC visits for two consecutive months.", "icon": "Award" },
+    { "id": "ach_002", "title": "Early Outbreak Spotter", "description": "First to flag a dengue cluster before district-level detection.", "icon": "ShieldCheck" },
+    { "id": "ach_003", "title": "Immunization Champion", "description": "Maintained above 90% immunization coverage in assigned area.", "icon": "Syringe" }
+  ]
+}

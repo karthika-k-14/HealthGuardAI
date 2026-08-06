@@ -1,0 +1,16 @@
+{
+  "zones": [
+    { "id": "zone_1", "name": "Ward 3 - Periyanaickenpalayam", "riskLevel": "High", "lat": 11.0801, "lng": 76.9603, "activeCases": 78 },
+    { "id": "zone_2", "name": "Ward 6 - Sulur", "riskLevel": "Medium", "lat": 11.0244, "lng": 77.1256, "activeCases": 34 },
+    { "id": "zone_3", "name": "Ward 1 - RS Puram", "riskLevel": "Safe", "lat": 11.0074, "lng": 76.9497, "activeCases": 6 },
+    { "id": "zone_4", "name": "Ward 8 - Kuniyamuthur", "riskLevel": "Medium", "lat": 10.9584, "lng": 76.9558, "activeCases": 29 },
+    { "id": "zone_5", "name": "Ward 4 - Saravanampatti", "riskLevel": "Safe", "lat": 11.0745, "lng": 77.0128, "activeCases": 9 },
+    { "id": "zone_6", "name": "Ward 9 - Singanallur", "riskLevel": "High", "lat": 11.0004, "lng": 77.0273, "activeCases": 64 }
+  ],
+  "facilities": [
+    { "id": "fac_1", "name": "Coimbatore District General Hospital", "type": "Hospital", "lat": 11.0168, "lng": 76.9558 },
+    { "id": "fac_2", "name": "PSG Hospitals", "type": "Hospital", "lat": 11.0246, "lng": 77.0028 },
+    { "id": "fac_3", "name": "Periyanaickenpalayam PHC", "type": "PHC", "lat": 11.0801, "lng": 76.9603 },
+    { "id": "fac_4", "name": "Sulur PHC", "type": "PHC", "lat": 11.0244, "lng": 77.1256 }
+  ]
+}

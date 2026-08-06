@@ -1,0 +1,6 @@
+[
+  { "id": "tip_001", "title": "Stay hydrated", "description": "Aim for at least 2.5L of water daily, especially in warm weather.", "icon": "Droplets" },
+  { "id": "tip_002", "title": "Move every hour", "description": "Short walks throughout the day help circulation and focus.", "icon": "Footprints" },
+  { "id": "tip_003", "title": "Prioritize sleep", "description": "7–8 hours of consistent sleep supports immunity and mood.", "icon": "Moon" },
+  { "id": "tip_004", "title": "Eat the rainbow", "description": "A variety of colorful vegetables covers more essential nutrients.", "icon": "Apple" }
+]

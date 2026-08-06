@@ -1,0 +1,39 @@
+{
+  "monthlySales": [
+    { "month": "Feb", "sales": 42000 },
+    { "month": "Mar", "sales": 45500 },
+    { "month": "Apr", "sales": 41000 },
+    { "month": "May", "sales": 48900 },
+    { "month": "Jun", "sales": 52200 },
+    { "month": "Jul", "sales": 31000 }
+  ],
+  "inventoryUsage": [
+    { "week": "Wk 1", "used": 210 },
+    { "week": "Wk 2", "used": 245 },
+    { "week": "Wk 3", "used": 198 },
+    { "week": "Wk 4", "used": 267 }
+  ],
+  "topMedicines": [
+    { "name": "Paracetamol 500mg", "unitsSold": 1240 },
+    { "name": "ORS Sachets", "unitsSold": 860 },
+    { "name": "Cetirizine 10mg", "unitsSold": 640 },
+    { "name": "Amoxicillin 250mg", "unitsSold": 512 },
+    { "name": "Ibuprofen 400mg", "unitsSold": 470 }
+  ],
+  "categoryDistribution": [
+    { "name": "Pain Relief", "value": 32 },
+    { "name": "Antibiotic", "value": 24 },
+    { "name": "Antihistamine", "value": 14 },
+    { "name": "Rehydration", "value": 12 },
+    { "name": "Supplement", "value": 10 },
+    { "name": "Other", "value": 8 }
+  ],
+  "stockTrends": [
+    { "month": "Feb", "stockLevel": 78 },
+    { "month": "Mar", "stockLevel": 72 },
+    { "month": "Apr", "stockLevel": 65 },
+    { "month": "May", "stockLevel": 80 },
+    { "month": "Jun", "stockLevel": 74 },
+    { "month": "Jul", "stockLevel": 69 }
+  ]
+}

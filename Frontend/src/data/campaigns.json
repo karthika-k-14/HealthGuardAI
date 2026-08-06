@@ -1,0 +1,57 @@
+[
+  {
+    "id": "cmp_001",
+    "title": "Dengue Prevention Week",
+    "status": "active",
+    "district": "Coimbatore",
+    "startDate": "2026-06-28",
+    "endDate": "2026-07-05",
+    "reach": 42000,
+    "type": "Awareness",
+    "progress": 72
+  },
+  {
+    "id": "cmp_002",
+    "title": "Child Immunization Camp",
+    "status": "scheduled",
+    "district": "Coimbatore",
+    "startDate": "2026-07-06",
+    "endDate": "2026-07-06",
+    "reach": 0,
+    "type": "Vaccination Drive",
+    "progress": 10
+  },
+  {
+    "id": "cmp_003",
+    "title": "Seasonal Flu Awareness",
+    "status": "completed",
+    "district": "Coimbatore",
+    "startDate": "2026-05-10",
+    "endDate": "2026-05-24",
+    "reach": 61500,
+    "type": "Awareness",
+    "progress": 100
+  },
+  {
+    "id": "cmp_004",
+    "title": "District Blood Donation Camp",
+    "status": "active",
+    "district": "Coimbatore",
+    "startDate": "2026-07-01",
+    "endDate": "2026-07-10",
+    "reach": 3400,
+    "type": "Blood Donation",
+    "progress": 55
+  },
+  {
+    "id": "cmp_005",
+    "title": "Maternal Nutrition Support Programme",
+    "status": "active",
+    "district": "Coimbatore",
+    "startDate": "2026-06-15",
+    "endDate": "2026-08-15",
+    "reach": 18500,
+    "type": "Nutrition Program",
+    "progress": 48
+  }
+]

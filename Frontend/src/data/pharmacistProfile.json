@@ -1,0 +1,20 @@
+{
+  "license": {
+    "licenseNo": "TN-PH-88213",
+    "issuedBy": "Tamil Nadu Pharmacy Council",
+    "issuedOn": "2016-04-12",
+    "validTill": "2027-04-11",
+    "pharmacyName": "CareWell Pharmacy",
+    "pharmacyAddress": "Mettupalayam Road, Coimbatore"
+  },
+  "experience": {
+    "yearsInPractice": 9,
+    "prescriptionsVerified": 18400,
+    "specialization": "Community Pharmacy & Chronic Care Management"
+  },
+  "achievements": [
+    { "id": "pach_001", "title": "Zero Dispensing Errors", "description": "Maintained a clean verification record for 12 consecutive months.", "icon": "ShieldCheck" },
+    { "id": "pach_002", "title": "Inventory Excellence", "description": "Kept stock-out incidents under 2% for the whole year.", "icon": "Award" },
+    { "id": "pach_003", "title": "Fast Responder", "description": "Average prescription verification time under 5 minutes.", "icon": "Activity" }
+  ]
+}

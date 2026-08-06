@@ -1,0 +1,5 @@
+[
+  { "id": "medreq_001", "medicine": "Iron & Folic Acid tablets", "quantity": 50, "status": "approved", "requestedOn": "2026-06-27" },
+  { "id": "medreq_002", "medicine": "ORS packets", "quantity": 100, "status": "pending", "requestedOn": "2026-07-01" },
+  { "id": "medreq_003", "medicine": "Paracetamol syrup (pediatric)", "quantity": 20, "status": "pending", "requestedOn": "2026-07-03" }
+]
