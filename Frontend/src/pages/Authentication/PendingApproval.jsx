@@ -74,7 +74,7 @@ export default function PendingApproval() {
         )}
 
         <p className="mt-6 text-xs text-slate-400 dark:text-slate-500">
-          You'll be able to log in as soon as an administrator reviews your account. No further
+          You&apos;ll be able to log in as soon as an administrator reviews your account. No further
           action is needed from you right now.
         </p>
 

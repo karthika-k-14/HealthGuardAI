@@ -18,7 +18,8 @@ export default function AIHealthSummaryWidget() {
   const { user } = useAuth();
   const { cases, isLoading } = useCitizenCases(user?.name);
   const [nearestPHCs, setNearestPHCs] = useState([]);
-
+console.log("USER NAME:", user?.name);
+console.log("LATEST CASE:", cases?.[0]);
   const latest = cases?.[0];
   const decision = latest ? getDecisionForUrgency(latest.riskLevel) : null;
 
@@ -30,7 +31,7 @@ export default function AIHealthSummaryWidget() {
     }
   }, [decision?.showNearestPHC]);
 
-  if (isLoading || !latest) return null;
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="surface-card space-y-4 p-5">

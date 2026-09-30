@@ -1,7 +1,0 @@
-[
-  { "id": "act_001", "type": "chat", "title": "Asked the AI Assistant about cough symptoms", "timestamp": "2026-07-03T18:20:00+05:30" },
-  { "id": "act_002", "type": "vaccination", "title": "Logged upcoming Influenza vaccination", "timestamp": "2026-07-02T09:10:00+05:30" },
-  { "id": "act_003", "type": "hospital", "title": "Viewed Ganga Hospital details", "timestamp": "2026-07-01T14:45:00+05:30" },
-  { "id": "act_004", "type": "medicine", "title": "Looked up Cetirizine dosage", "timestamp": "2026-06-30T08:05:00+05:30" },
-  { "id": "act_005", "type": "healthscore", "title": "Generated an AI Health Score of 72", "timestamp": "2026-06-28T20:15:00+05:30" }
-]

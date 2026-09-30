@@ -15,7 +15,7 @@ import { useAuth } from './AuthContext';
 
 const CaseContext = createContext(null);
 
-const POLL_INTERVAL_MS = 6000;
+
 
 /**
  * Global Case Management Context.
@@ -33,22 +33,114 @@ const POLL_INTERVAL_MS = 6000;
  * runs (while signed in) as a safety net for any future multi-tab /
  * async scenario.
  */
+
+
 export function CaseProvider({ children }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const currentUserId = user?.id || user?.userId || null;
   const [cases, setCases] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [latestAssessment, setLatestAssessment] = useState(null);
+  const [latestDiagnosis, setLatestDiagnosis] = useState(null);
+
+  // Load user-scoped assessment when user changes
+  useEffect(() => {
+    if (!isAuthenticated || !currentUserId) {
+      setCases([]);
+      setLatestAssessment(null);
+      setLatestDiagnosis(null);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const scopedKey = `healthguard_latest_symptom_${currentUserId}`;
+      const saved = localStorage.getItem(scopedKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setLatestAssessment(parsed);
+        setLatestDiagnosis(parsed);
+      } else {
+        setLatestAssessment(null);
+        setLatestDiagnosis(null);
+      }
+    } catch (e) {
+      setLatestAssessment(null);
+      setLatestDiagnosis(null);
+    }
+  }, [isAuthenticated, currentUserId]);
+
+  const updateAssessment = useCallback((assessmentPayload) => {
+    if (!assessmentPayload) return;
+
+    const prediction = (assessmentPayload.prediction || assessmentPayload.predictedCondition || '').trim();
+    const rawRisk = (assessmentPayload.riskLevel || assessmentPayload.severity || '').trim().toUpperCase();
+    const riskLevel = rawRisk === 'MEDIUM' ? 'MODERATE' : rawRisk;
+    const recommendation = (assessmentPayload.recommendation || assessmentPayload.recommendations || assessmentPayload.doctorAdvice || '').trim();
+
+    // Condition 2: If any field is missing, null, undefined, empty string, or whitespace, do NOT save
+    if (!prediction || !riskLevel || !recommendation) {
+      console.warn('Invalid symptom assessment skipped:', assessmentPayload);
+      return;
+    }
+
+    const symptoms = (Array.isArray(assessmentPayload.symptoms)
+      ? assessmentPayload.symptoms
+      : (assessmentPayload.symptoms ? [assessmentPayload.symptoms] : [])
+    ).map(s => typeof s === 'object' && s !== null ? (s.name || s.symptom || s.label || JSON.stringify(s)) : String(s));
+
+    const possibleConditions = (Array.isArray(assessmentPayload.possibleConditions)
+      ? assessmentPayload.possibleConditions
+      : (assessmentPayload.possibleConditions ? [assessmentPayload.possibleConditions] : [prediction])
+    ).map(c => typeof c === 'object' && c !== null ? (c.name || c.condition || c.disease || JSON.stringify(c)) : String(c));
+
+    const formatted = {
+      prediction,
+      riskLevel,
+      recommendation,
+      symptoms,
+      possibleConditions,
+      predictedCondition: prediction,
+      severity: riskLevel,
+      recommendations: recommendation,
+      doctorAdvice: recommendation,
+      age: assessmentPayload.age || null,
+      gender: assessmentPayload.gender || null,
+      allergies: assessmentPayload.allergies || null,
+      medicalHistory: assessmentPayload.medicalHistory || null,
+      timestamp: assessmentPayload.timestamp || new Date().toISOString(),
+    };
+
+    setLatestAssessment(formatted);
+    setLatestDiagnosis(formatted);
+
+    if (currentUserId) {
+      try {
+        localStorage.setItem(`healthguard_latest_symptom_${currentUserId}`, JSON.stringify(formatted));
+      } catch (e) {
+        console.error('Failed to save assessment to localStorage:', e);
+      }
+    }
+  }, [currentUserId]);
+
+  const updateDiagnosis = useCallback((diagnosisPayload) => {
+    updateAssessment(diagnosisPayload);
+  }, [updateAssessment]);
+
   const refresh = useCallback(async () => {
-    const data = await fetchAllCases();
+    if (!isAuthenticated) return [];
+    const rawData = await fetchAllCases();
+    const data = Array.isArray(rawData) ? rawData : (rawData?.data || []);
     setCases(data);
     setIsLoading(false);
     return data;
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) {
       setCases([]);
-      setIsLoading(true);
+      setIsLoading(false);
       return;
     }
     refresh();
@@ -62,6 +154,7 @@ export function CaseProvider({ children }) {
     },
     [refresh]
   );
+
 
   const submitEmergency = useCallback(
     async (payload) => {
@@ -139,6 +232,10 @@ export function CaseProvider({ children }) {
     () => ({
       cases,
       isLoading,
+      latestAssessment,
+      updateAssessment,
+      latestDiagnosis,
+      updateDiagnosis,
       refresh,
       submitCase,
       submitEmergency,
@@ -153,6 +250,10 @@ export function CaseProvider({ children }) {
     [
       cases,
       isLoading,
+      latestAssessment,
+      updateAssessment,
+      latestDiagnosis,
+      updateDiagnosis,
       refresh,
       submitCase,
       submitEmergency,
@@ -179,35 +280,38 @@ export function useCaseContext() {
 
 export function useCitizenCases(citizenName) {
   const { cases, ...rest } = useCaseContext();
+  const safeCases = Array.isArray(cases) ? cases : [];
   const myCases = useMemo(
-    () => cases.filter((c) => c.citizenName === citizenName),
-    [cases, citizenName]
+    () => safeCases.filter((c) => c?.citizenName === citizenName),
+    [safeCases, citizenName]
   );
   return { cases: myCases, ...rest };
 }
 
 export function useAshaCases() {
   const { cases, ...rest } = useCaseContext();
-  const assigned = useMemo(() => cases.filter((c) => c.assignedAsha), [cases]);
+  const safeCases = Array.isArray(cases) ? cases : [];
+  const assigned = useMemo(() => safeCases.filter((c) => c?.assignedAsha), [safeCases]);
   return { cases: assigned, ...rest };
 }
 
 export function useOfficerCases() {
   const { cases, ...rest } = useCaseContext();
-  const assigned = useMemo(() => cases.filter((c) => c.assignedOfficer), [cases]);
+  const safeCases = Array.isArray(cases) ? cases : [];
+  const assigned = useMemo(() => safeCases.filter((c) => c?.assignedOfficer), [safeCases]);
   const pending = useMemo(
-    () => assigned.filter((c) => c.status === 'Officer Reviewing' || c.status === 'Lab Test Requested'),
+    () => assigned.filter((c) => c?.status === 'Officer Reviewing' || c?.status === 'Lab Test Requested'),
     [assigned]
   );
   const rejected = useMemo(
-    () => assigned.filter((c) => c.timeline.some((t) => t.label === 'Officer Rejected')),
+    () => assigned.filter((c) => c?.timeline?.some((t) => t?.label === 'Officer Rejected')),
     [assigned]
   );
   const approved = useMemo(
-    () => assigned.filter((c) => c.referralNote && !rejected.includes(c)),
+    () => assigned.filter((c) => c?.referralNote && !rejected.includes(c)),
     [assigned, rejected]
   );
-  const critical = useMemo(() => assigned.filter((c) => c.riskLevel === 'High' && c.status !== 'Completed'), [
+  const critical = useMemo(() => assigned.filter((c) => c?.riskLevel === 'High' && c?.status !== 'Completed'), [
     assigned,
   ]);
   return { cases: assigned, pending, approved, rejected, critical, ...rest };

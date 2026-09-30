@@ -9,6 +9,7 @@ export const DISEASE_CATEGORIES = {
   VECTOR_BORNE: 'Vector-borne',
   MATERNAL: 'Maternal Health',
   CHILD_HEALTH: 'Child Health',
+  GASTRO: 'Gastrointestinal & Hepatic',
   GENERAL: 'General Illness',
 };
 
@@ -29,8 +30,11 @@ export const DISEASE_NAME_CATEGORY_MAP = {
   tuberculosis: DISEASE_CATEGORIES.RESPIRATORY,
   covid: DISEASE_CATEGORIES.RESPIRATORY,
   'common cold': DISEASE_CATEGORIES.RESPIRATORY,
+  jaundice: DISEASE_CATEGORIES.GASTRO,
+  hepatitis: DISEASE_CATEGORIES.GASTRO,
+  'liver cirrhosis': DISEASE_CATEGORIES.GASTRO,
   migraine: DISEASE_CATEGORIES.GENERAL,
-  gastroenteritis: DISEASE_CATEGORIES.GENERAL,
+  gastroenteritis: DISEASE_CATEGORIES.GASTRO,
   diabetes: DISEASE_CATEGORIES.GENERAL,
   pregnancy: DISEASE_CATEGORIES.MATERNAL,
   'antenatal care': DISEASE_CATEGORIES.MATERNAL,
@@ -47,6 +51,7 @@ export const CATEGORY_KEYWORD_RULES = [
   { category: DISEASE_CATEGORIES.CHILD_HEALTH, keywords: ['infant', 'newborn', 'toddler', 'child immuni', 'growth chart', 'malnutrition', 'बच्च', 'குழந்தை', 'ଶିଶୁ'] },
   { category: DISEASE_CATEGORIES.VECTOR_BORNE, keywords: ['mosquito', 'dengue', 'malaria', 'chikungunya', 'joint pain', 'rash', 'मच्छर', 'கொசு', 'ମଶା'] },
   { category: DISEASE_CATEGORIES.RESPIRATORY, keywords: ['cough', 'breath', 'chest congestion', 'wheeze', 'cold', 'flu', 'sore throat', 'खांसी', 'இருமல்', 'କାଶ'] },
+  { category: DISEASE_CATEGORIES.GASTRO, keywords: ['jaundice', 'yellow eye', 'yellow skin', 'icterus', 'hepatitis', 'liver', 'dark urine', 'pale stool', 'पीलिया', 'மஞ்சள் காமாலை'] },
 ];
 
 /**

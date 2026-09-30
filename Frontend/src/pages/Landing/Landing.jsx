@@ -40,7 +40,7 @@ export default function Landing() {
           className="mx-auto flex max-w-5xl flex-col items-center gap-5 rounded-xl3 bg-gradient-to-br from-brand-500 to-brand-700 px-8 py-14 text-center shadow-glow"
         >
           <h2 className="font-display text-2xl font-semibold text-white sm:text-3xl">
-            Ready to strengthen your district's early response?
+            Ready to strengthen your district&apos;s early response?
           </h2>
           <p className="max-w-lg text-sm text-brand-50/90">
             Sign in with your role-based account, or continue as a guest to explore.

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, FileText, User, Pill, Stethoscope } from 'lucide-react';
+import { Plus, Trash2, User, Pill, Stethoscope } from 'lucide-react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
 import { createPrescription, updatePrescription } from '../../api/prescriptionApi';
@@ -10,7 +10,7 @@ export default function PrescriptionFormModal({ open, onClose, prescription = nu
   const isEdit = Boolean(prescription?.id);
   const [medicines, setMedicines] = useState(['']);
   
-  const { register, handleSubmit, reset, setValue, formState: { isSubmitting } } = useForm({
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm({
     defaultValues: {
       patientName: '',
       patientAge: '',

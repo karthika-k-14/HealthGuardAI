@@ -6,7 +6,8 @@ import React from 'react';
 
 export default function WelcomeBanner() {
   const { user } = useAuth();
-  const firstName = user?.name?.split(' ')[0] || 'there';
+  const rawName = user?.name || (user?.email ? user.email.split('@')[0].replace(/[._-]/g, ' ') : '');
+  const firstName = rawName ? rawName.split(' ')[0].replace(/\b\w/g, c => c.toUpperCase()) : 'ASHA Worker';
 
   return (
     <motion.div

@@ -17,6 +17,11 @@ export default function VaccinationMonitor() {
     };
   }, []);
 
+  const populationByAgeGroup = Array.isArray(data?.populationByAgeGroup) ? data.populationByAgeGroup : [];
+  const upcomingDrives = Array.isArray(data?.upcomingDrives) ? data.upcomingDrives : [];
+  const coverage = data?.coverage ?? 0;
+  const missedVaccinations = data?.missedVaccinations ?? 0;
+
   return (
     <div className="space-y-6">
       <div>
@@ -30,11 +35,11 @@ export default function VaccinationMonitor() {
         <div className="grid gap-5 lg:grid-cols-3">
           <div className="surface-card flex flex-col items-center p-6 text-center">
             <p className="self-start text-sm font-semibold text-slate-900 dark:text-white">Coverage</p>
-            <ProgressRing value={data.coverage} size={128} tone={data.coverage >= 80 ? 'brand' : 'amber'} className="mt-4">
-              <span className="font-display text-2xl font-semibold text-slate-900 dark:text-white">{data.coverage}%</span>
+            <ProgressRing value={coverage} size={128} tone={coverage >= 80 ? 'brand' : 'amber'} className="mt-4">
+              <span className="font-display text-2xl font-semibold text-slate-900 dark:text-white">{coverage}%</span>
             </ProgressRing>
             <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-              {data.missedVaccinations.toLocaleString()} missed vaccinations district-wide
+              {missedVaccinations.toLocaleString()} missed vaccinations district-wide
             </p>
           </div>
 
@@ -46,20 +51,24 @@ export default function VaccinationMonitor() {
               <p className="text-sm font-semibold text-slate-900 dark:text-white">Coverage by Age Group</p>
             </div>
             <div className="mt-4 space-y-3">
-              {data.populationByAgeGroup.map((g) => (
-                <div key={g.ageGroup}>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-600 dark:text-slate-300">{g.ageGroup} · {g.population.toLocaleString()} people</span>
-                    <span className="text-slate-400">{g.covered}%</span>
+              {populationByAgeGroup.length === 0 ? (
+                <p className="text-xs text-slate-400 py-6 text-center">No demographic vaccination coverage records found.</p>
+              ) : (
+                populationByAgeGroup.map((g) => (
+                  <div key={g.ageGroup}>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-600 dark:text-slate-300">{g.ageGroup} · {(g.population ?? 0).toLocaleString()} people</span>
+                      <span className="text-slate-400">{g.covered ?? 0}%</span>
+                    </div>
+                    <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/10">
+                      <div
+                        className={`h-full rounded-full ${(g.covered ?? 0) >= 85 ? 'bg-brand-500' : 'bg-signal-amber'}`}
+                        style={{ width: `${g.covered ?? 0}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/10">
-                    <div
-                      className={`h-full rounded-full ${g.covered >= 85 ? 'bg-brand-500' : 'bg-signal-amber'}`}
-                      style={{ width: `${g.covered}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -71,15 +80,18 @@ export default function VaccinationMonitor() {
               <p className="text-sm font-semibold text-slate-900 dark:text-white">Upcoming Drives</p>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              {data.upcomingDrives.map((d) => (
+              {upcomingDrives.map((d) => (
                 <div key={d.id} className="rounded-xl border border-slate-200/70 p-3 dark:border-white/10">
                   <p className="flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-100">
                     <Syringe className="h-3.5 w-3.5 text-brand-500" /> {d.name}
                   </p>
                   <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{d.area}</p>
-                  <p className="mt-1 text-xs text-slate-400">{new Date(d.date).toLocaleDateString()}</p>
+                  <p className="mt-1 text-xs text-slate-400">{d.date ? new Date(d.date).toLocaleDateString() : 'Upcoming'}</p>
                 </div>
               ))}
+              {upcomingDrives.length === 0 && (
+                <p className="text-xs text-slate-400 sm:col-span-3">No upcoming drives scheduled.</p>
+              )}
             </div>
           </div>
         </div>

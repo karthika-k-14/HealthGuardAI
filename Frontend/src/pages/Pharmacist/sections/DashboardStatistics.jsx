@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingCart, PackageCheck, ClipboardCheck, Boxes } from 'lucide-react';
+import { Boxes, AlertTriangle, PackageX, CalendarClock } from 'lucide-react';
 import { fetchPharmacistDashboard } from '../../../api/pharmacistApi';
 import { fetchDashboardStats } from '../../../api/pharmacyApi';
 import { SkeletonGrid } from '../../../components/common/Skeleton';
 
 const STAT_ITEMS = [
-  { key: 'todaysPrescriptions', fallbackKey: 'todaysOrders', label: "Today's Prescriptions", icon: ShoppingCart, tone: 'text-brand-600 dark:text-brand-400 bg-brand-500/10' },
-  { key: 'medicinesDispensedToday', fallbackKey: 'todaysRevenue', label: "Dispensed Today", icon: PackageCheck, tone: 'text-emerald-600 dark:text-emerald-300 bg-emerald-500/10' },
-  { key: 'pendingPrescriptionRequests', fallbackKey: 'prescriptionsVerified', label: 'Pending Requests', icon: ClipboardCheck, tone: 'text-sky-600 dark:text-sky-400 bg-sky-500/10' },
   { key: 'totalMedicines', fallbackKey: 'totalInventoryItems', label: 'Total Medicines', icon: Boxes, tone: 'text-purple-600 dark:text-purple-300 bg-purple-500/10' },
+  { key: 'lowStockMedicines', fallbackKey: 'lowStockAlerts', label: 'Low Stock Alerts', icon: AlertTriangle, tone: 'text-amber-600 dark:text-amber-400 bg-amber-500/10' },
+  { key: 'outOfStockMedicines', fallbackKey: 'outOfStockItems', label: 'Out of Stock', icon: PackageX, tone: 'text-rose-600 dark:text-rose-400 bg-rose-500/10' },
+  { key: 'expiringMedicines', fallbackKey: 'expiringSoonItems', label: 'Expiring Soon', icon: CalendarClock, tone: 'text-orange-600 dark:text-orange-400 bg-orange-500/10' },
 ];
 
 export default function DashboardStatistics() {

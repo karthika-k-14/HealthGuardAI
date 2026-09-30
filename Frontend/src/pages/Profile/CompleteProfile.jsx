@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -20,39 +20,104 @@ import Button from '../../components/common/Button';
 import Logo from '../../components/common/Logo';
 import { LANGUAGES } from '../../constants/languages';
 import { useAuth } from '../../contexts/AuthContext';
-
-const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+import { BLOOD_GROUP_OPTIONS } from '../../utils/bloodGroupMapper';
+import { reverseGeocodeLocation } from '../../api/locationApi';
+import apiClient from '../../api/axios';
+import { getRegisteredUser } from '../../api/authApi';
+import { ROLE_HOME_ROUTE } from '../../constants/roles';
 
 // Shown once, right after a user's first successful login, if their
-// profile isn't complete yet (see ProtectedRoute.jsx). Registration
-// only ever collects identity + credentials — everything else lands
-// here: blood group, DOB, address, geo-location, emergency contact,
-// medical history, etc. Saving redirects to the dashboard.
+// profile isn't complete yet (Citizens only).
 export default function CompleteProfile() {
   const navigate = useNavigate();
   const { user, completeProfile, isLoading } = useAuth();
+
+  const regUser = useMemo(() => {
+    return user?.email ? getRegisteredUser(user.email) : null;
+  }, [user]);
+
+  // Non-citizen accounts never belong in the citizen complete profile flow
+  // Prevent already-completed citizens from opening /complete-profile manually
+  useEffect(() => {
+    let currentUser = user;
+    if (!currentUser) {
+      try {
+        const raw = localStorage.getItem('user');
+        currentUser = raw ? JSON.parse(raw) : null;
+      } catch {}
+    }
+
+    if (currentUser) {
+      if (currentUser.role && currentUser.role !== 'citizen') {
+        navigate(ROLE_HOME_ROUTE[currentUser.role] || '/pharmacist', { replace: true });
+        return;
+      }
+      if (currentUser.profileCompleted === true) {
+        navigate('/citizen', { replace: true });
+        return;
+      }
+    }
+
+    const uid = currentUser?.id || currentUser?.userId;
+    if (uid) {
+      apiClient.get(`/api/citizens/${uid}/profile`)
+        .then(({ data }) => {
+          const profile = data?.data || data;
+          if (profile && (profile.profileCompleted === true || (profile.dateOfBirth && profile.height && profile.weight))) {
+            navigate('/citizen', { replace: true });
+          }
+        })
+        .catch(() => {});
+    }
+  }, [user, navigate]);
 
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      bloodGroup: '',
-      dateOfBirth: '',
-      address: '',
-      district: '',
-      state: '',
-      pincode: '',
-      preferredLanguage: 'en',
-      latitude: '',
-      longitude: '',
-      profilePhoto: '',
-      emergencyContact: '',
-      medicalHistory: '',
+      gender: user?.gender || regUser?.gender || '',
+      height: user?.height || regUser?.height || '',
+      weight: user?.weight || regUser?.weight || '',
+      bloodGroup: user?.bloodGroup || regUser?.bloodGroup || '',
+      dateOfBirth: user?.dateOfBirth || regUser?.dateOfBirth || '',
+      address: user?.address || regUser?.address || user?.location || '',
+      district: user?.district || regUser?.district || 'Coimbatore',
+      state: user?.state || regUser?.state || 'Tamil Nadu',
+      pincode: user?.pincode || regUser?.pincode || '',
+      preferredLanguage: user?.preferredLanguage || regUser?.preferredLanguage || 'en',
+      latitude: user?.latitude || '',
+      longitude: user?.longitude || '',
+      profilePhoto: user?.profilePhoto || '',
+      emergencyContact: user?.emergencyContact || user?.emergencyContactNumber || regUser?.emergencyContact || '',
+      medicalHistory: user?.medicalHistory || regUser?.medicalHistory || '',
     },
   });
+
+  useEffect(() => {
+    if (user || regUser) {
+      reset({
+        gender: user?.gender || regUser?.gender || '',
+        height: user?.height || regUser?.height || '',
+        weight: user?.weight || regUser?.weight || '',
+        bloodGroup: user?.bloodGroup || regUser?.bloodGroup || '',
+        dateOfBirth: user?.dateOfBirth || regUser?.dateOfBirth || '',
+        address: user?.address || regUser?.address || user?.location || '',
+        district: user?.district || regUser?.district || 'Coimbatore',
+        state: user?.state || regUser?.state || 'Tamil Nadu',
+        pincode: user?.pincode || regUser?.pincode || '',
+        preferredLanguage: user?.preferredLanguage || regUser?.preferredLanguage || 'en',
+        latitude: user?.latitude || '',
+        longitude: user?.longitude || '',
+        profilePhoto: user?.profilePhoto || '',
+        emergencyContact: user?.emergencyContact || user?.emergencyContactNumber || regUser?.emergencyContact || '',
+        medicalHistory: user?.medicalHistory || regUser?.medicalHistory || '',
+      });
+    }
+  }, [user, regUser, reset]);
 
   const useCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -60,10 +125,25 @@ export default function CompleteProfile() {
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setValue('latitude', pos.coords.latitude.toFixed(6));
-        setValue('longitude', pos.coords.longitude.toFixed(6));
-        toast.success('Location captured.');
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        setValue('latitude', lat.toFixed(6));
+        setValue('longitude', lon.toFixed(6));
+        toast.success('Location coordinates captured.');
+        
+        try {
+          const geoData = await reverseGeocodeLocation(lat, lon);
+          if (geoData) {
+            if (geoData.address) setValue('address', geoData.address);
+            if (geoData.district) setValue('district', geoData.district);
+            if (geoData.state) setValue('state', geoData.state);
+          } else {
+            toast('Location coordinates obtained, but address details could not be determined.', { icon: 'ℹ️' });
+          }
+        } catch (err) {
+          toast('Location coordinates obtained, but address details could not be determined.', { icon: 'ℹ️' });
+        }
       },
       () => toast.error('Unable to fetch your location.')
     );
@@ -72,6 +152,12 @@ export default function CompleteProfile() {
   const onSubmit = async (values) => {
     const result = await completeProfile({
       ...values,
+      fullName: user?.name || user?.fullName || '',
+      email: user?.email || '',
+      phone: user?.phone || user?.phoneNumber || user?.mobileNumber || '',
+      gender: values.gender || null,
+      height: values.height ? Number(values.height) : null,
+      weight: values.weight ? Number(values.weight) : null,
       bloodGroup: values.bloodGroup || null,
       latitude: values.latitude ? Number(values.latitude) : null,
       longitude: values.longitude ? Number(values.longitude) : null,
@@ -109,14 +195,51 @@ export default function CompleteProfile() {
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4" noValidate>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
+              <label htmlFor="gender" className="label-text">Gender</label>
+              <select id="gender" className="input-field" {...register('gender', { required: 'Gender is required' })}>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              {errors.gender && <p className="mt-1.5 text-xs text-signal-rose">{errors.gender.message}</p>}
+            </div>
+
+            <div>
               <label htmlFor="bloodGroup" className="label-text">Blood Group</label>
               <div className="relative">
                 <Droplet className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <select id="bloodGroup" className="input-field pl-10" {...register('bloodGroup')}>
                   <option value="">Prefer not to say</option>
-                  {BLOOD_GROUPS.map((bg) => <option key={bg} value={bg}>{bg}</option>)}
+                  {BLOOD_GROUP_OPTIONS.map((bg) => <option key={bg} value={bg}>{bg}</option>)}
                 </select>
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="height" className="label-text">Height (cm)</label>
+              <input
+                id="height"
+                type="number"
+                step="0.1"
+                placeholder="e.g. 165"
+                className="input-field"
+                {...register('height', { required: 'Height is required', min: { value: 40, message: 'Enter a valid height' } })}
+              />
+              {errors.height && <p className="mt-1.5 text-xs text-signal-rose">{errors.height.message}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="weight" className="label-text">Weight (kg)</label>
+              <input
+                id="weight"
+                type="number"
+                step="0.1"
+                placeholder="e.g. 60"
+                className="input-field"
+                {...register('weight', { required: 'Weight is required', min: { value: 10, message: 'Enter a valid weight' } })}
+              />
+              {errors.weight && <p className="mt-1.5 text-xs text-signal-rose">{errors.weight.message}</p>}
             </div>
 
             <div>

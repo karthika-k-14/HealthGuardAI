@@ -1,23 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { AreaChart, Area, ResponsiveContainer, XAxis, Tooltip } from 'recharts';
 import { Activity } from 'lucide-react';
-import { fetchDiseaseMonitoring } from '../../../api/officerApi';
+import { fetchOfficerSurveillanceReports } from '../../../api/surveillanceApi';
 import { Skeleton } from '../../../components/common/Skeleton';
 
 export default function HealthStatisticsWidget() {
-  const [chartData, setChartData] = useState(null);
+  const [chartData, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    fetchDiseaseMonitoring().then((diseases) => {
-      if (!mounted) return;
-      const weeks = diseases[0].trend.map((t) => t.week);
-      const combined = weeks.map((week, idx) => ({
-        week,
-        cases: diseases.reduce((sum, d) => sum + d.trend[idx].cases, 0),
-      }));
-      setChartData(combined);
-    });
+    fetchOfficerSurveillanceReports()
+      .then((reports) => {
+        if (!mounted) return;
+        const list = Array.isArray(reports) ? reports : [];
+        if (list.length === 0) {
+          setChartData([]);
+          return;
+        }
+
+        const dateCounts = {};
+        list.forEach((r) => {
+          const dateStr = r.reportDate || (r.createdAt ? r.createdAt.substring(0, 10) : 'Recent');
+          dateCounts[dateStr] = (dateCounts[dateStr] || 0) + 1;
+        });
+
+        const combined = Object.entries(dateCounts)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([week, cases]) => ({ week, cases }));
+
+        setChartData(combined);
+      })
+      .catch(() => {
+        if (mounted) setChartData([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+
     return () => {
       mounted = false;
     };
@@ -33,8 +53,12 @@ export default function HealthStatisticsWidget() {
       </div>
 
       <div className="mt-4 h-56">
-        {!chartData ? (
+        {isLoading ? (
           <Skeleton className="h-full w-full" />
+        ) : chartData.length === 0 ? (
+          <div className="flex h-full items-center justify-center text-xs text-slate-400">
+            No surveillance trend data recorded yet.
+          </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 5, right: 8, left: -12, bottom: 0 }}>

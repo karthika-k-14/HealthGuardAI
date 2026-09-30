@@ -1,0 +1,281 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 120000
+
+      x-forwarded:
+        enabled: true
+
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "http://localhost:*"
+              - "http://127.0.0.1:*"
+              - "http://localhost:5173"
+              - "http://127.0.0.1:5173"
+              - "https://*.healthguard.app"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
+      routes:
+        # ---------- 1. auth-service (8081) [PUBLIC] ----------
+        - id: auth-service-me
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/me
+          filters:
+            - SetPath=/api/auth/profile
+
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - name: Retry
+              args:
+                retries: 2
+                methods: GET
+                series: SERVER_ERROR
+
+        # ---------- 2. citizen-service (8082) [CITIZEN, ASHA_WORKER, HEALTH_OFFICER, ADMIN] ----------
+        - id: citizen-service-dashboard
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/dashboard/**,/api/dashboard,/api/citizen/dashboard/**,/api/citizen/dashboard
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,HEALTH_OFFICER,ADMIN,PHARMACIST
+
+        - id: citizen-service-chat
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/citizen/chat/**,/api/chat/**,/api/chat
+          filters:
+            - JwtAuthentication=CITIZEN,ADMIN,ASHA_WORKER,HEALTH_OFFICER
+
+        - id: citizen-service-diseases
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/diseases/**,/api/diseases
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,HEALTH_OFFICER,ADMIN,PHARMACIST
+
+        - id: citizen-service-nutrition
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/nutrition/**,/api/nutrition
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,HEALTH_OFFICER,ADMIN,PHARMACIST
+
+        - id: citizen-service-facilities
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/facilities/**,/api/facilities
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,HEALTH_OFFICER,ADMIN,PHARMACIST
+
+        - id: citizen-service-profile
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/citizens/**,/api/citizens
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,HEALTH_OFFICER,ADMIN
+
+        - id: community-service-officer-notifications
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/notifications/health-officer/**,/api/notifications/unread-count/**,/api/notifications/read/**,/api/notifications/read-all/**,/api/officer/notifications/**,/api/asha/notifications/**
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,ADMIN,HEALTH_OFFICER,PHARMACIST
+
+        - id: citizen-service-notifications
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/notifications/**,/api/notifications
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,ADMIN,HEALTH_OFFICER,PHARMACIST
+
+        - id: citizen-service-reminders
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/reminders/**,/api/reminders
+          filters:
+            - JwtAuthentication=CITIZEN,ADMIN
+
+        - id: citizen-service-documents
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/documents/**,/api/documents
+          filters:
+            - JwtAuthentication=CITIZEN,ADMIN
+
+        - id: citizen-service-schemes
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/citizen/schemes/**,/api/citizen/schemes,/api/schemes/**,/api/schemes
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,HEALTH_OFFICER,ADMIN,PHARMACIST
+
+        - id: citizen-service-awareness
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/awareness/**,/api/awareness,/api/citizen/awareness/**,/api/citizen/awareness
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,HEALTH_OFFICER,ADMIN,PHARMACIST
+
+        # ---------- 3. community-service (8083) [ALL ROLES FOR SHARED DATA] ----------
+        - id: community-service-emergency-alerts
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/emergency-alerts/**,/api/emergency-alerts
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,HEALTH_OFFICER,ADMIN,PHARMACIST
+
+        - id: community-service-phc
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/phc/**,/api/phc,/api/community/**,/api/community
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,PHARMACIST,HEALTH_OFFICER,ADMIN
+
+        - id: community-service-asha
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/asha/**,/api/asha
+          filters:
+            - JwtAuthentication=ASHA_WORKER,HEALTH_OFFICER,ADMIN
+
+        - id: community-service-officer-referrals
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/officer/referrals/**,/api/officer/referrals
+          filters:
+            - JwtAuthentication=HEALTH_OFFICER,ADMIN
+
+        - id: community-service-surveillance
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/surveillance/**,/api/officer/**,/api/health-officer/**,/api/broadcast/**,/api/broadcast,/api/surveillance,/api/reports/**,/api/reports
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,PHARMACIST,HEALTH_OFFICER,ADMIN
+
+        # Blocked: PHC Referrals transferred away from Pharmacist module
+        - id: blocked-pharmacist-referrals
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/pharmacist/referrals/**,/api/pharmacist/referrals,/pharmacist/referrals/**
+          filters:
+            - JwtAuthentication=HEALTH_OFFICER,ADMIN
+
+        # ---------- 5. admin-service (8085) ----------
+        - id: admin-service-pharmacist-module
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/pharmacist/**,/api/pharmacist,/pharmacist/**,/pharmacist,/api/pharmacists/**,/api/pharmacists,/pharmacists/**,/pharmacists,/api/prescriptions/**,/api/prescriptions,/prescriptions/**,/prescriptions,/api/medicines/**,/api/medicines,/medicines/**,/medicines,/api/pharmacy/**,/api/pharmacy,/pharmacy/**,/pharmacy
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,PHARMACIST,HEALTH_OFFICER,ADMIN
+
+        - id: admin-service-articles-campaigns
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/articles/**,/api/articles,/api/campaigns/**,/api/campaigns
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,PHARMACIST,HEALTH_OFFICER,ADMIN
+
+        - id: admin-service-workflows
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/admin/workflows/**,/api/admin/workflows
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,PHARMACIST,HEALTH_OFFICER,ADMIN
+
+        - id: admin-service-settings
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/admin/settings/**,/api/admin/settings
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,PHARMACIST,HEALTH_OFFICER,ADMIN
+
+        # ---------- 5e. admin-service-shared-data ----------
+        - id: admin-service-shared-data
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/admin/dashboard,/api/admin/settings,/api/hospitals/**,/api/hospitals,/api/citizen-assignments/**,/api/citizen-assignments,/api/asha-workers/**,/api/asha-workers
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,PHARMACIST,HEALTH_OFFICER,ADMIN
+
+        # ---------- 5f. admin-service-strict ----------
+        - id: admin-service-strict
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/admin/**,/admin/**
+          filters:
+            - JwtAuthentication=ADMIN,HEALTH_OFFICER,PHARMACIST
+
+        # ---------- 4a. health-ai-service FastAPI (8000) [PUBLIC DEMO ENDPOINTS] ----------
+        - id: health-ai-fastapi-public
+          uri: http://localhost:8000
+          predicates:
+            - Path=/api/ai/health/risk-assessment,/api/ai/health/predict-risk,/api/ai/health/predict-expiry-risk,/api/ai/health/forecast-demand,/api/ai/health/public/**,/api/ai/health/health
+
+        # ---------- 4b. health-ai-service FastAPI (8000) [AUTHENTICATED ROLES] ----------
+        - id: health-ai-fastapi
+          uri: http://localhost:8000
+          predicates:
+            - Path=/api/ai/health/**
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,PHARMACIST,HEALTH_OFFICER,ADMIN
+
+        # ---------- 4c. ai-service (8084) ----------
+        - id: ai-service-triage
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/ai/**
+          filters:
+            - JwtAuthentication=CITIZEN,ASHA_WORKER,PHARMACIST,HEALTH_OFFICER,ADMIN
+
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250655368566D5971}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,gateway,info
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      access: unrestricted
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    com.healthguard.gateway: DEBUG

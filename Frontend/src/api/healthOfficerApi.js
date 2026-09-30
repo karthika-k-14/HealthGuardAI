@@ -16,82 +16,85 @@ import { apiClient } from './axios';
  * than real disease/outbreak data. See the backend Swagger docs for
  * `/officer/dashboard` and `/officer/disease-monitoring` for details.
  *
- * None of the existing Health Officer pages (OfficerDashboard,
- * ReferralMonitoring, DistrictAnalytics, DiseaseMonitoring) consume a
- * shape compatible with these endpoints — see the Phase 3 handoff notes
- * for why they remain on mock data. Reports.jsx is the one screen wired
- * to this file, since its UI renders whatever summary object it's given.
+ * Health Officer pages consume live data from the Spring Boot `/api/officer/**`
+ * and `/api/surveillance/**` endpoints.
  */
 
 // ---- Dashboard -----------------------------------------------------
 
 export async function fetchOfficerDashboard() {
-  const { data } = await apiClient.get('/officer/dashboard');
-  return data;
+  try {
+    const { data } = await apiClient.get('/api/officer/dashboard');
+    return data;
+  } catch {
+    return { pendingCases: 0, diseaseAlerts: 0 };
+  }
 }
 
 // ---- PHC management --------------------------------------------------
 
 export async function fetchOfficerPhcs() {
-  const { data } = await apiClient.get('/officer/phcs');
-  return data;
+  try {
+    const { data } = await apiClient.get('/api/officer/phcs');
+    return data;
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchOfficerPhcDetail(phcId) {
-  const { data } = await apiClient.get(`/officer/phcs/${phcId}`);
-  return data;
+  try {
+    const { data } = await apiClient.get(`/api/officer/phcs/${phcId}`);
+    return data;
+  } catch {
+    return null;
+  }
 }
 
 export async function updateOfficerPhc(phcId, payload) {
-  const { data } = await apiClient.put(`/officer/phcs/${phcId}`, payload);
+  const { data } = await apiClient.put(`/api/officer/phcs/${phcId}`, payload);
   return data;
 }
 
 // ---- Village management -----------------------------------------------
 
 export async function fetchOfficerVillages() {
-  const { data } = await apiClient.get('/officer/villages');
-  return data;
+  try {
+    const { data } = await apiClient.get('/api/officer/villages');
+    return data;
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchOfficerVillageDetail(villageId) {
-  const { data } = await apiClient.get(`/officer/villages/${villageId}`);
-  return data;
+  try {
+    const { data } = await apiClient.get(`/api/officer/villages/${villageId}`);
+    return data;
+  } catch {
+    return null;
+  }
 }
 
 // ---- Disease monitoring ------------------------------------------------
 
 export async function fetchOfficerDiseaseMonitoring() {
-  const { data } = await apiClient.get('/officer/disease-monitoring');
-  return data;
+  try {
+    const { data } = await apiClient.get('/api/officer/disease-monitoring');
+    return data;
+  } catch {
+    return [];
+  }
 }
 
 // ---- ASHA monitoring ----------------------------------------------------
 
 export async function fetchOfficerAshaWorkers() {
-  const { data } = await apiClient.get('/officer/asha-workers');
-  return data;
+  try {
+    const { data } = await apiClient.get('/api/officer/asha-workers');
+    return data;
+  } catch {
+    return [];
+  }
 }
 
-// ---- Health reports -----------------------------------------------------
-
-// reportType: 'daily' | 'weekly' | 'monthly'
-export async function fetchOfficerHealthReport(reportType) {
-  const { data } = await apiClient.get(`/officer/reports/${reportType}`);
-  return data;
-}
-
-// Triggers a CSV download of the given report type via the browser.
-export async function exportOfficerHealthReport(reportType) {
-  const response = await apiClient.get(`/officer/reports/${reportType}/export`, {
-    responseType: 'blob',
-  });
-  const url = window.URL.createObjectURL(new Blob([response.data]));
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', `${reportType}-health-report.csv`);
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.URL.revokeObjectURL(url);
-}

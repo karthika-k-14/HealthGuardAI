@@ -10,7 +10,6 @@ import {
   PackageCheck,
   XCircle,
   History,
-  Send,
   Sparkles,
 } from 'lucide-react';
 import Modal from '../common/Modal';
@@ -197,7 +196,7 @@ export default function PrescriptionDetailsModal({
                 <div>
                   <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Instructions / Notes</h4>
                   <p className="mt-1 text-xs italic text-slate-600 dark:text-slate-300 bg-slate-50 p-2.5 rounded-lg dark:bg-white/5">
-                    "{prescription.notes}"
+                    &quot;{prescription.notes}&quot;
                   </p>
                 </div>
               )}

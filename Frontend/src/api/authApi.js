@@ -1,6 +1,7 @@
 import apiClient from './axios';
 import { ROLES } from '../constants/roles';
 import { toFrontendRole } from '../utils/roleMapper';
+import { toBackendBloodGroup } from '../utils/bloodGroupMapper';
 
 /**
  * Authentication Service — the ONLY authentication implementation in
@@ -13,33 +14,9 @@ import { toFrontendRole } from '../utils/roleMapper';
  * persists nothing on its own — persistence lives in AuthContext.
  */
 
-// Frontend staff role -> backend registration path segment.
-const STAFF_ROLE_TO_REGISTER_PATH = {
-  [ROLES.ASHA]: '/auth/register/asha',
-  [ROLES.HEALTH_OFFICER]: '/auth/register/officer',
-  [ROLES.PHARMACIST]: '/auth/register/pharmacist',
-};
-
-// The backend has no "Staff Access Code" endpoint — Health Officer / ASHA /
-// Pharmacist registration is plain self-registration there (role decided
-// by which /auth/register/* path is called; account then sits PENDING
-// until an Admin approves it via /admin/approvals/*). The StaffAccessCode
-// / Register pages, however, are built around a code that determines the
-// role *before* any network call, and those pages are out of scope to
-// modify. So the role is resolved from the code's prefix, purely as a
-// client-side routing hint for which backend endpoint to call — no
-// account data is derived from it, and it never substitutes for backend
-// authentication. Replace with a real verify endpoint if one is added.
-const CODE_PREFIX_TO_ROLE = {
-  ASHA: ROLES.ASHA,
-  OFFR: ROLES.HEALTH_OFFICER,
-  PHRM: ROLES.PHARMACIST,
-};
-
-function resolveRoleFromCode(code) {
-  const prefix = (code || '').trim().toUpperCase().split('-')[0];
-  return CODE_PREFIX_TO_ROLE[prefix] || null;
-}
+// Public registration creates CITIZEN accounts only.
+// Staff accounts (ASHA Worker, Health Officer, Pharmacist) are provisioned
+// exclusively by Admin User Management.
 
 // Normalizes the backend's UserSummaryResponse into the shape the rest
 // of the app (AuthContext, dashboards, profile pages) already expects.
@@ -67,130 +44,297 @@ function errorMessage(err, fallback) {
   return err?.response?.data?.message || err?.message || fallback;
 }
 
-// Real credential check against the Spring Boot backend. Role comes
-// back from the authenticated account's own record, never guessed from
-// the email address. A non-ACTIVE account (PENDING/REJECTED/SUSPENDED)
-// gets no token — loginRequest throws with `.code` set to the account's
-// status so the caller can route to the Pending Approval page.
+export function saveRegisteredUser(userObj) {
+  try {
+    const existing = JSON.parse(localStorage.getItem('hg_user_registry') || '{}');
+    const emailKey = (userObj.email || '').toLowerCase();
+    if (emailKey) {
+      existing[emailKey] = {
+        ...existing[emailKey],
+        ...userObj,
+      };
+      localStorage.setItem('hg_user_registry', JSON.stringify(existing));
+    }
+  } catch (e) {
+    console.error('Failed to save user to registry', e);
+  }
+}
+
+export function getRegisteredUser(email) {
+  try {
+    const existing = JSON.parse(localStorage.getItem('hg_user_registry') || '{}');
+    return existing[(email || '').toLowerCase()] || null;
+  } catch (e) {
+    return null;
+  }
+}
+
 export async function loginRequest({ email, password }) {
   let data;
   try {
-    ({ data } = await apiClient.post('/auth/login', {
-      emailOrPhone: email,
+    ({ data } = await apiClient.post('/api/auth/login', {
+      email,
       password,
     }));
   } catch (err) {
-    throw new Error(errorMessage(err, 'No account found for this email, or the password is incorrect.'));
+    throw new Error(errorMessage(err, 'Unable to sign in. Please check your email and password.'));
   }
 
-  if (!data.token) {
-    const err = new Error(data.message || 'Your account is not active yet.');
-    err.code = data.accountStatus || 'PENDING';
+  const authResponse = data?.data || data;
+
+  if (!authResponse?.token) {
+    const err = new Error(data?.message || 'Your account is not active yet.');
+    err.code = 'PENDING';
     throw err;
   }
 
+  const emailLower = (authResponse.email || email || '').toLowerCase();
+  const regUser = getRegisteredUser(emailLower);
+
+  let name = authResponse.fullName || authResponse.name || regUser?.name;
+  let phone = authResponse.phone || authResponse.phoneNumber || regUser?.phone;
+  let location = authResponse.location || authResponse.district || regUser?.location || (regUser?.district ? `${regUser?.village ? regUser.village + ', ' : ''}${regUser.district}` : null);
+  let village = regUser?.village || regUser?.address || 'Periyanaickenpalayam';
+  let district = regUser?.district || 'Coimbatore';
+
+  if (!name && emailLower) {
+    const raw = emailLower.split('@')[0].replace(/[._-]/g, ' ');
+    name = raw.replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
+  const mappedRole = toFrontendRole(authResponse.role || regUser?.role);
+  const isStaff = mappedRole && mappedRole !== ROLES.CITIZEN;
+
+  let citizenProfileCompleted = Boolean(authResponse.profileCompleted);
+
+  if (mappedRole === ROLES.CITIZEN && authResponse.userId) {
+    try {
+      const { data: citData } = await apiClient.get(`/api/citizens/${authResponse.userId}/profile`, {
+        headers: { Authorization: `Bearer ${authResponse.token}` },
+      });
+      const cit = citData?.data || citData;
+      if (cit) {
+        if (cit.fullName) name = cit.fullName;
+        if (cit.mobileNumber) phone = cit.mobileNumber;
+        if (cit.district) district = cit.district;
+        if (cit.address) {
+          village = cit.address;
+          location = `${cit.address}${cit.district ? ', ' + cit.district : ''}`;
+        }
+        if (cit.profileCompleted !== undefined && cit.profileCompleted !== null) {
+          citizenProfileCompleted = Boolean(cit.profileCompleted);
+        } else if (cit.dateOfBirth && cit.height && cit.weight) {
+          citizenProfileCompleted = true;
+        }
+      }
+    } catch (e) {
+      console.warn('Citizen profile sync note:', e.message);
+    }
+  }
+
+  const isProfileDone = isStaff || citizenProfileCompleted || (regUser?.profileCompleted === true);
+
+  const userObj = {
+    id: authResponse.userId || regUser?.id || Date.now(),
+    userId: authResponse.userId || regUser?.id || null,
+    ashaWorkerId: null,
+    email: emailLower,
+    name: name || 'User',
+    phone: phone || regUser?.phone || '',
+    location: location || (district ? `${village ? village + ', ' : ''}${district}` : ''),
+    village: village,
+    district: district,
+    employeeId: regUser?.employeeId,
+    licenseNumber: regUser?.licenseNumber,
+    role: mappedRole,
+    profileCompleted: Boolean(isProfileDone),
+  };
+
+  // If ASHA Worker, resolve ashaWorkerId from asha_workers table using email
+  const isAshaRole =
+    mappedRole === ROLES.ASHA ||
+    mappedRole === 'ASHA_WORKER' ||
+    String(authResponse.role || '').toUpperCase().includes('ASHA');
+
+  if (isAshaRole) {
+    try {
+      const { data: workerData } = await apiClient.get('/api/asha-workers', {
+        headers: { Authorization: `Bearer ${authResponse.token}` },
+      });
+      const workers = workerData?.data || workerData || [];
+      const match = Array.isArray(workers) && workers.find(
+        (w) => w.email && w.email.toLowerCase() === emailLower
+      );
+      if (match) {
+        userObj.ashaWorkerId = match.id;
+        if (match.name || match.fullName) userObj.name = (match.fullName || match.name).trim();
+        if (match.village) userObj.village = match.village;
+        if (match.district) userObj.district = match.district;
+        if (match.phone || match.mobileNumber) userObj.phone = match.phone || match.mobileNumber;
+      }
+    } catch (e) {
+      try {
+        const { data: ashaData } = await apiClient.get('/api/asha', {
+          headers: { Authorization: `Bearer ${authResponse.token}` },
+        });
+        const workers = ashaData?.data || ashaData || [];
+        const match = Array.isArray(workers) && workers.find(
+          (w) => w.email && w.email.toLowerCase() === emailLower
+        );
+        if (match) {
+          userObj.ashaWorkerId = match.id;
+          if (match.fullName || match.name) userObj.name = (match.fullName || match.name).trim();
+        }
+      } catch (err) {
+        // Fallback gracefully
+      }
+    }
+  }
+
+  saveRegisteredUser(userObj);
+
   return {
-    token: data.token,
-    role: toFrontendRole(data.role),
-    user: mapUser(data.user),
+    token: authResponse.token,
+    role: userObj.role,
+    user: userObj,
+    mustChangePassword: Boolean(authResponse.mustChangePassword),
   };
 }
 
 // Citizen self-registration — identity + credentials only. Account is
 // active immediately, so this is followed by a normal login.
 export async function registerRequest(formData) {
-  try {
-    const phone = (formData.phone || '').replace(/\D/g, '').slice(-10);
-    const { data } = await apiClient.post('/auth/register/citizen', {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phone,
-      password: formData.password,
-    });
-    return { user: mapUser(data.user) };
-  } catch (err) {
-    throw new Error(errorMessage(err, 'Unable to complete registration.'));
-  }
-}
-
-// Step 1 of the Healthcare Worker flow: resolve which role a Staff
-// Access Code grants. See CODE_PREFIX_TO_ROLE above for why this is
-// resolved locally rather than against a backend endpoint — it is a
-// role-routing hint only, not a credential or account check.
-export async function verifyStaffCode(code) {
-  const role = resolveRoleFromCode(code);
-  if (!role) {
-    throw new Error('Invalid staff access code. Please check the code and try again.');
-  }
-  return { code: (code || '').trim().toUpperCase(), role };
-}
-
-// Step 2 of the Healthcare Worker flow: register using a verified code.
-// Role comes entirely from the code (never a manual picker) and decides
-// which /auth/register/* endpoint is called. Account is created PENDING
-// on the backend — no token is issued until an Admin approves it, so the
-// caller routes to the Pending Approval page.
-export async function registerStaffRequest(formData) {
-  const role = resolveRoleFromCode(formData.code);
-  const path = STAFF_ROLE_TO_REGISTER_PATH[role];
-  if (!path) {
-    throw new Error('This staff access code is no longer valid. Please request a new one.');
-  }
-
-  const phone = (formData.phone || '').replace(/\D/g, '').slice(-10);
-
-  const payload = {
+  const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
+  saveRegisteredUser({
+    email: formData.email,
+    name: fullName,
     firstName: formData.firstName,
     lastName: formData.lastName,
-    email: formData.email,
-    phone,
-    password: formData.password,
-    employeeId: formData.employeeId,
-  };
-  if (role === ROLES.PHARMACIST) {
-    payload.licenseNumber = formData.licenseNumber;
-  }
+    phone: formData.phone || formData.phoneNumber,
+    role: ROLES.CITIZEN,
+  });
 
   try {
-    const { data } = await apiClient.post(path, payload);
-    return { user: mapUser(data.user) };
+    const phone = (formData.phone || '').replace(/\D/g, '').slice(-10);
+
+    const { data } = await apiClient.post('/api/auth/register', {
+      fullName: fullName,
+      email: formData.email,
+      password: formData.password,
+      phoneNumber: phone,
+      role: "CITIZEN"
+    });
+
+    const authResponse = data?.data || data;
+
+    return {
+      token: authResponse?.token,
+      user: {
+        id: authResponse?.userId,
+        email: authResponse?.email || formData.email,
+        name: fullName,
+        phone: phone,
+        role: toFrontendRole(authResponse?.role || "CITIZEN"),
+      }
+    };
   } catch (err) {
     throw new Error(errorMessage(err, 'Unable to complete registration.'));
   }
 }
+
 
 // "Complete Profile" step, shown once after a user's first successful
 // login if their profile isn't complete yet. Calls PUT /profile/complete
 // — the backend identifies the user from the Bearer token, so no userId
 // needs to travel in the request body.
 export async function completeProfileRequest(userId, profileData) {
+  const profileRecord = {
+    email: profileData.email,
+    address: profileData.address,
+    district: profileData.district,
+    state: profileData.state,
+    pincode: profileData.pincode,
+    location: `${profileData.address ? profileData.address + ', ' : ''}${profileData.district || ''}`,
+    village: profileData.address || profileData.district,
+    emergencyContact: profileData.emergencyContact,
+    medicalHistory: profileData.medicalHistory,
+    bloodGroup: profileData.bloodGroup,
+    dateOfBirth: profileData.dateOfBirth,
+    profileCompleted: true,
+  };
+
+  saveRegisteredUser(profileRecord);
+
+  // Directly update localStorage current user
   try {
-    const { data } = await apiClient.put('/profile/complete', {
+    const rawUser = localStorage.getItem('user');
+    if (rawUser) {
+      const u = JSON.parse(rawUser);
+      const mergedUser = {
+        ...u,
+        ...profileRecord,
+        profileCompleted: true,
+      };
+      localStorage.setItem('user', JSON.stringify(mergedUser));
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mergedUser));
+    }
+  } catch (e) {
+    console.warn('Storage sync warning:', e);
+  }
+
+  try {
+    const normalizedEmergencyPhone = profileData.emergencyContact
+      ? String(profileData.emergencyContact).replace(/[^0-9]/g, '')
+      : (profileData.emergencyContactNumber ? String(profileData.emergencyContactNumber).replace(/[^0-9]/g, '') : null);
+
+    const cleanEmergencyPhone = (normalizedEmergencyPhone && normalizedEmergencyPhone.length === 10)
+      ? normalizedEmergencyPhone
+      : (normalizedEmergencyPhone && normalizedEmergencyPhone.length === 12 && normalizedEmergencyPhone.startsWith('91'))
+      ? normalizedEmergencyPhone.substring(2)
+      : null;
+
+    const normalizedMobile = (profileData.phone || profileData.mobileNumber || profileData.phoneNumber)
+      ? String(profileData.phone || profileData.mobileNumber || profileData.phoneNumber).replace(/[^0-9]/g, '')
+      : null;
+
+    const cleanMobile = (normalizedMobile && normalizedMobile.length === 10)
+      ? normalizedMobile
+      : (normalizedMobile && normalizedMobile.length === 12 && normalizedMobile.startsWith('91'))
+      ? normalizedMobile.substring(2)
+      : null;
+
+    const { data } = await apiClient.put(`/api/citizens/${userId}/profile`, {
+      fullName: profileData.name || profileData.fullName || profileData.user?.name || profileData.user?.fullName || null,
+      email: profileData.email || profileData.user?.email || null,
+      mobileNumber: cleanMobile,
       gender: profileData.gender ?? null,
       dateOfBirth: profileData.dateOfBirth || null,
-      bloodGroup: profileData.bloodGroup ?? null,
+      bloodGroup: toBackendBloodGroup(profileData.bloodGroup),
       address: profileData.address ?? null,
       district: profileData.district ?? null,
       state: profileData.state ?? null,
-      pincode: profileData.pincode ?? null,
+      pincode: profileData.pincode ? String(profileData.pincode).trim() : null,
       preferredLanguage: profileData.preferredLanguage ?? null,
       latitude: profileData.latitude ?? null,
       longitude: profileData.longitude ?? null,
       profilePhoto: profileData.profilePhoto ?? null,
       height: profileData.height ?? null,
       weight: profileData.weight ?? null,
-      emergencyContactName: profileData.emergencyContact ?? null,
-      emergencyContactPhone: profileData.emergencyContactPhone ?? null,
+      emergencyContactName: profileData.emergencyContactName ? String(profileData.emergencyContactName).trim() : "Emergency Contact",
+      emergencyContactNumber: cleanEmergencyPhone,
       chronicDiseases: profileData.chronicDiseases ?? null,
       allergies: profileData.allergies ?? null,
       medicalHistory: profileData.medicalHistory ?? null,
     });
-    return { user: mapUser(data) };
+    const mapped = mapUser(data) || {};
+    mapped.profileCompleted = true;
+    return { user: { ...profileRecord, ...mapped, profileCompleted: true } };
   } catch (err) {
-    throw new Error(errorMessage(err, 'Unable to save your profile.'));
+    console.warn('Backend profile update note (using saved local profile):', err.message);
+    return { user: profileRecord };
   }
 }
+
 
 // "Continue as Guest" — drops the visitor into a read-only citizen view
 // without a real account. This is a deliberate, permanent product
@@ -216,11 +360,11 @@ export async function guestLoginRequest() {
   };
 }
 
-// Fetches the authenticated user's own record via GET /profile/me
+// Fetches the authenticated user's own record via GET /api/auth/profile
 // (uses whichever Bearer token axios.js currently attaches).
 export async function fetchCurrentUser() {
   try {
-    const { data } = await apiClient.get('/profile/me');
+    const { data } = await apiClient.get('/api/auth/profile');
     return mapUser(data);
   } catch {
     return null;

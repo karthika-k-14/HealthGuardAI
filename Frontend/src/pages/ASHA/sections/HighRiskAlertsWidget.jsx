@@ -32,11 +32,11 @@ export default function HighRiskAlertsWidget() {
 
       <div className="mt-4 space-y-2.5">
         {isLoading && Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-11 w-full" />)}
-        {!isLoading && alerts.length === 0 && (
+        {!isLoading && (Array.isArray(alerts) ? alerts : []).length === 0 && (
           <p className="text-sm text-slate-400">No high-risk alerts right now.</p>
         )}
         {!isLoading &&
-          alerts.map((a) => (
+          (Array.isArray(alerts) ? alerts : []).map((a) => (
             <div key={a.id} className="flex items-start gap-2.5 rounded-xl bg-signal-rose/5 px-3 py-2.5">
               <Badge tone="rose" className="mt-0.5 shrink-0">
                 {a.type === 'outbreak' ? 'Outbreak' : 'Family'}

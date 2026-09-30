@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageCircle, Stethoscope, Hospital, Pill, Syringe, Siren, Landmark } from 'lucide-react';
+import { MessageCircle, Stethoscope, Hospital, Pill, Siren, Landmark } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PATHS } from '../../../constants/routes';
 
@@ -11,7 +11,6 @@ const ACTIONS = [
   { labelKey: 'Symptom Checker', icon: Stethoscope, to: PATHS.CITIZEN_SYMPTOM_CHECKER, tone: 'text-indigo-600 dark:text-indigo-300 bg-indigo-500/10' },
   { labelKey: 'Find Hospital', icon: Hospital, to: PATHS.CITIZEN_HOSPITALS, tone: 'text-sky-600 dark:text-sky-400 bg-sky-500/10' },
   { labelKey: 'Medicine Guide', icon: Pill, to: PATHS.CITIZEN_MEDICINES, tone: 'text-purple-600 dark:text-purple-300 bg-purple-500/10' },
-  { labelKey: 'Vaccination', icon: Syringe, to: PATHS.CITIZEN_VACCINATIONS, tone: 'text-emerald-600 dark:text-emerald-300 bg-emerald-500/10' },
   { labelKey: 'Emergency', icon: Siren, to: PATHS.CITIZEN_EMERGENCY, tone: 'text-rose-600 dark:text-rose-400 bg-rose-500/10' },
   { labelKey: 'Govt. Schemes', icon: Landmark, to: PATHS.CITIZEN_SCHEMES, tone: 'text-amber-600 dark:text-amber-400 bg-amber-500/10' },
 ];

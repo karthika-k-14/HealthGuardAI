@@ -1,5 +1,0 @@
-[
-  { "id": "phm_001", "name": "CareWell Pharmacy", "distanceKm": 1.2, "rating": 4.3, "phone": "+91 422 220 1188", "open24Hours": true },
-  { "id": "phm_002", "name": "MedPlus RS Puram", "distanceKm": 2.6, "rating": 4.1, "phone": "+91 422 254 3321", "open24Hours": false },
-  { "id": "phm_003", "name": "Apollo Pharmacy Saravanampatti", "distanceKm": 4.0, "rating": 4.5, "phone": "+91 422 266 7789", "open24Hours": true }
-]

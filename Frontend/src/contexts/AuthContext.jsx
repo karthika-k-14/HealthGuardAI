@@ -1,25 +1,54 @@
-import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
+import React, { createContext, useContext, useMemo, useState, useCallback, useEffect } from 'react';
 import { STORAGE_KEYS } from '../constants/storageKeys';
 import { getItem, getJSON, removeItem, setItem, setJSON } from '../utils/storage';
-import { ROLE_HOME_ROUTE } from '../constants/roles';
+import { ROLE_HOME_ROUTE, ROLES } from '../constants/roles';
 import { PATHS } from '../constants/routes';
 import {
   loginRequest,
   guestLoginRequest,
   registerRequest,
-  registerStaffRequest,
-  verifyStaffCode,
   completeProfileRequest,
 } from '../api/authApi';
+import { isTokenExpired } from '../utils/jwt';
 
 const AuthContext = createContext(undefined);
 
 function loadInitialSession() {
-  const token = getItem(STORAGE_KEYS.TOKEN);
-  const role = getItem(STORAGE_KEYS.ROLE);
-  const user = getJSON(STORAGE_KEYS.USER, null);
+  const token = getItem(STORAGE_KEYS.TOKEN) || localStorage.getItem('token');
+
+  if (token && isTokenExpired(token)) {
+    // Stale or expired token found - clear storage immediately to prevent cascading 401s
+    removeItem(STORAGE_KEYS.TOKEN);
+    removeItem(STORAGE_KEYS.ROLE);
+    removeItem(STORAGE_KEYS.USER);
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('user');
+    return { token: null, role: null, user: null, isAuthenticated: false };
+  }
+
+  const role = getItem(STORAGE_KEYS.ROLE) || localStorage.getItem('role');
+  let user = getJSON(STORAGE_KEYS.USER, null);
+  if (!user && localStorage.getItem('user')) {
+    try {
+      user = JSON.parse(localStorage.getItem('user'));
+    } catch (e) {
+      user = null;
+    }
+  }
 
   if (token && role && user) {
+    if (role !== ROLES.CITIZEN && role !== 'citizen') {
+      user.profileCompleted = true;
+    } else if (user.email) {
+      try {
+        const reg = JSON.parse(localStorage.getItem('hg_user_registry') || '{}');
+        const regUser = reg[user.email.toLowerCase()];
+        if (regUser && regUser.profileCompleted) {
+          user.profileCompleted = true;
+        }
+      } catch (e) {}
+    }
     return { token, role, user, isAuthenticated: true };
   }
   return { token: null, role: null, user: null, isAuthenticated: false };
@@ -33,6 +62,9 @@ function persistSession(response) {
   setItem(STORAGE_KEYS.TOKEN, response.token);
   setItem(STORAGE_KEYS.ROLE, response.role);
   setJSON(STORAGE_KEYS.USER, response.user);
+  if (response.token) localStorage.setItem('token', response.token);
+  if (response.role) localStorage.setItem('role', response.role);
+  if (response.user) localStorage.setItem('user', JSON.stringify(response.user));
 }
 
 export function AuthProvider({ children }) {
@@ -42,11 +74,15 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
 
   // Where a freshly-authenticated user should land: Complete Profile
-  // first if it isn't done yet (shown once, after first login), then
-  // the one-time app tour, then their role's home dashboard.
+  // only for Citizens if not completed yet; staff roles go directly to their dashboard.
   const resolveRedirect = useCallback((role, user) => {
-    if (user && user.profileCompleted === false) return PATHS.COMPLETE_PROFILE;
-    return loadOnboardingFlag() ? ROLE_HOME_ROUTE[role] : PATHS.ONBOARDING;
+    if (role === ROLES.CITIZEN) {
+      if (!user || user.profileCompleted === false) {
+        return PATHS.COMPLETE_PROFILE;
+      }
+      return PATHS.CITIZEN || '/citizen';
+    }
+    return ROLE_HOME_ROUTE[role] || '/pharmacist';
   }, []);
 
   // Login validates real credentials against the Spring Boot backend
@@ -77,7 +113,11 @@ export function AuthProvider({ children }) {
           isAuthenticated: true,
         });
 
-        return { success: true, redirectTo: resolveRedirect(response.role, response.user) };
+        if (response.mustChangePassword) {
+          return { success: true, redirectTo: PATHS.CHANGE_PASSWORD, mustChangePassword: true, user: response.user };
+        }
+
+        return { success: true, redirectTo: resolveRedirect(response.role, response.user), user: response.user };
       } catch (err) {
         setError(err.message || 'Unable to sign in. Please try again.');
         return { success: false, error: err.message, status: err.code || null };
@@ -104,40 +144,6 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // Step 1 of the Healthcare Worker flow — verify a Staff Access Code
-  // and find out which role it grants, without creating an account.
-  const checkStaffAccessCode = useCallback(async (code) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const result = await verifyStaffCode(code);
-      return { success: true, role: result.role, code: result.code };
-    } catch (err) {
-      setError(err.message || 'Invalid staff access code.');
-      return { success: false, error: err.message };
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Step 2 of the Healthcare Worker flow — register using a verified
-  // code. Role comes entirely from the code, never a manual picker.
-  // The account is created PENDING, so this never logs the user in;
-  // the caller routes to the Pending Approval page instead.
-  const registerStaff = useCallback(async (formData) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await registerStaffRequest(formData);
-      return { success: true, user: response.user };
-    } catch (err) {
-      setError(err.message || 'Unable to complete registration.');
-      return { success: false, error: err.message };
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   // "Complete Profile" step, shown once after a user's first
   // successful login if their profile isn't complete yet.
   const completeProfile = useCallback(
@@ -148,13 +154,27 @@ export function AuthProvider({ children }) {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await completeProfileRequest(session.user.id, profileData);
-        setSession((prev) => {
-          const nextUser = { ...prev.user, ...response.user };
-          setJSON(STORAGE_KEYS.USER, nextUser);
-          return { ...prev, user: nextUser };
-        });
-        return { success: true, redirectTo: loadOnboardingFlag() ? ROLE_HOME_ROUTE[session.role] : PATHS.ONBOARDING };
+        const response = await completeProfileRequest(session.user.id || session.user.userId, profileData);
+        const nextUser = {
+          ...session.user,
+          ...profileData,
+          ...(response?.user || {}),
+          profileCompleted: true,
+        };
+
+        setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
+        setOnboardingCompleted(true);
+        setJSON(STORAGE_KEYS.USER, nextUser);
+        localStorage.setItem('user', JSON.stringify(nextUser));
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(nextUser));
+
+        setSession((prev) => ({
+          ...prev,
+          user: nextUser,
+        }));
+
+        const targetDashboard = ROLE_HOME_ROUTE[session.role] || PATHS.CITIZEN_HOME || '/citizen';
+        return { success: true, redirectTo: targetDashboard };
       } catch (err) {
         setError(err.message || 'Unable to save your profile.');
         return { success: false, error: err.message };
@@ -189,12 +209,21 @@ export function AuthProvider({ children }) {
   }, [resolveRedirect]);
 
   const logout = useCallback(() => {
-    removeItem(STORAGE_KEYS.TOKEN);
-    removeItem(STORAGE_KEYS.ROLE);
-    removeItem(STORAGE_KEYS.USER);
-    removeItem(STORAGE_KEYS.LAST_ROUTE);
+    // Preserve only device-level preferences like language or onboarding
+    const preservedLang = localStorage.getItem('hg_language');
+    const preservedOnboarding = localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
+
+    // Clear all storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Restore device preferences
+    if (preservedLang) localStorage.setItem('hg_language', preservedLang);
+    if (preservedOnboarding) localStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, preservedOnboarding);
+
     setSession({ token: null, role: null, user: null, isAuthenticated: false });
   }, []);
+
 
   // Onboarding is a device-level "seen it once" flag — it persists
   // across logout/login so a returning user never sees it again.
@@ -211,8 +240,6 @@ export function AuthProvider({ children }) {
       onboardingCompleted,
       login,
       register,
-      checkStaffAccessCode,
-      registerStaff,
       completeProfile,
       continueAsGuest,
       logout,
@@ -225,8 +252,6 @@ export function AuthProvider({ children }) {
       onboardingCompleted,
       login,
       register,
-      checkStaffAccessCode,
-      registerStaff,
       completeProfile,
       continueAsGuest,
       logout,

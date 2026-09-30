@@ -21,7 +21,7 @@ export default function NotFound() {
         <p className="font-display text-5xl font-semibold text-slate-900 dark:text-white">404</p>
         <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Page not found</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          The page you're looking for doesn't exist or may have moved.
+          The page you&apos;re looking for doesn&apos;t exist or may have moved.
         </p>
         <Link to={PATHS.HOME}>
           <Button variant="primary">Back to home</Button>

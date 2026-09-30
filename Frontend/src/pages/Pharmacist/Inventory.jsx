@@ -98,17 +98,27 @@ export default function Inventory() {
   }, [search, category, stockStatus]);
 
   const handleAdd = async (values) => {
-    const item = await addInventoryItem(values);
-    toast.success('Medicine added to inventory');
-    await maybeFlagLowStock(item);
-    load();
+    try {
+      const item = await addInventoryItem(values);
+      toast.success('Medicine added to inventory');
+      await maybeFlagLowStock(item);
+      load();
+      fetchInventoryCategories().then(setCategories);
+    } catch {
+      toast.error('Failed to add medicine');
+    }
   };
 
   const handleEdit = async (values) => {
-    const item = await updateInventoryItem(editing.id, values);
-    toast.success('Medicine updated');
-    await maybeFlagLowStock(item);
-    load();
+    try {
+      const item = await updateInventoryItem(editing.id, values);
+      toast.success('Medicine updated');
+      await maybeFlagLowStock(item);
+      load();
+      fetchInventoryCategories().then(setCategories);
+    } catch {
+      toast.error('Failed to update medicine');
+    }
   };
 
   // Pharmacist -> Health Officer: any item that drops to Low/Out of
@@ -121,9 +131,17 @@ export default function Inventory() {
   };
 
   const handleDelete = async (id) => {
-    await deleteInventoryItem(id);
-    toast.success('Medicine removed');
-    load();
+    const previousItems = items;
+    setItems((prev) => prev.filter((item) => item.id !== id));
+
+    try {
+      await deleteInventoryItem(id);
+      toast.success('Medicine removed');
+      fetchInventoryCategories().then(setCategories);
+    } catch {
+      setItems(previousItems);
+      toast.error('Failed to remove medicine. Please try again.');
+    }
   };
 
   return (

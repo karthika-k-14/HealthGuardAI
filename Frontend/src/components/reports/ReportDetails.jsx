@@ -43,13 +43,9 @@ export default function ReportDetails({ report, onDownload }) {
   // Breakdown maps from backend
   const monthlyBreakdown = report.monthlyRegistrationBreakdown || null;
   const chronicDistribution = report.chronicDiseaseDistribution || null;
-  const recordTypes = report.healthRecordsByType || null;
   const categoryBreakdown = report.categoryBreakdown || null;
   const genderBreakdown = report.genderBreakdown || null;
   const ageGroupBreakdown = report.ageGroupBreakdown || null;
-  const villageBreakdown = report.villageBreakdown || null;
-  const hospitalTypeBreakdown = report.hospitalTypeBreakdown || null;
-  const campaignStatusBreakdown = report.campaignStatusBreakdown || null;
   const overview = report.summaryOverview || null;
 
   return (
@@ -137,55 +133,67 @@ export default function ReportDetails({ report, onDownload }) {
       ) : null}
 
       {/* Monthly Registration Breakdown (Yearly Report) */}
-      {monthlyBreakdown && Object.keys(monthlyBreakdown).length > 0 && (
+      {monthlyBreakdown && (
         <div className="border-t border-slate-200 dark:border-slate-800 pt-5 space-y-3">
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
             <BarChart2 className="h-4 w-4 text-brand-500" /> Monthly Registration Trend
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-            {Object.entries(monthlyBreakdown).map(([month, count]) => (
-              <div key={month} className="rounded-lg bg-slate-50 dark:bg-white/5 p-2.5 text-center">
-                <span className="text-xs text-slate-400 font-mono block">{month}</span>
-                <span className="text-base font-bold text-slate-900 dark:text-white">{count}</span>
-              </div>
-            ))}
-          </div>
+          {Object.keys(monthlyBreakdown).length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+              {Object.entries(monthlyBreakdown).map(([month, count]) => (
+                <div key={month} className="rounded-lg bg-slate-50 dark:bg-white/5 p-2.5 text-center">
+                  <span className="text-xs text-slate-400 font-mono block">{month}</span>
+                  <span className="text-base font-bold text-slate-900 dark:text-white">{count}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">No monthly registration data available in database.</p>
+          )}
         </div>
       )}
 
       {/* Disease Distribution Section */}
-      {chronicDistribution && Object.keys(chronicDistribution).length > 0 && (
+      {chronicDistribution && (
         <div className="border-t border-slate-200 dark:border-slate-800 pt-5 space-y-3">
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Layers className="h-4 w-4 text-brand-500" /> Chronic Disease Distribution
+            <Layers className="h-4 w-4 text-brand-500" /> Disease Distribution
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {Object.entries(chronicDistribution).map(([disease, count]) => (
-              <div key={disease} className="rounded-xl bg-slate-50 dark:bg-white/5 p-3 flex justify-between items-center">
-                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{disease}</span>
-                <span className="text-xs font-bold bg-brand-500/10 text-brand-600 dark:text-brand-400 px-2 py-0.5 rounded-full">
-                  {count} cases
-                </span>
-              </div>
-            ))}
-          </div>
+          {Object.keys(chronicDistribution).length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {Object.entries(chronicDistribution).map(([disease, count]) => (
+                <div key={disease} className="rounded-xl bg-slate-50 dark:bg-white/5 p-3 flex justify-between items-center">
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{disease}</span>
+                  <span className="text-xs font-bold bg-brand-500/10 text-brand-600 dark:text-brand-400 px-2 py-0.5 rounded-full">
+                    {count} cases
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">No disease data recorded in database.</p>
+          )}
         </div>
       )}
 
       {/* Category Breakdown (Medicine Report) */}
-      {categoryBreakdown && Object.keys(categoryBreakdown).length > 0 && (
+      {categoryBreakdown && (
         <div className="border-t border-slate-200 dark:border-slate-800 pt-5 space-y-3">
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-            Medicine Categories
+            Categories Breakdown
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {Object.entries(categoryBreakdown).map(([cat, count]) => (
-              <div key={cat} className="rounded-lg bg-slate-50 dark:bg-white/5 p-2.5">
-                <span className="text-xs text-slate-500 dark:text-slate-400 block capitalize">{cat}</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-white">{count} items</span>
-              </div>
-            ))}
-          </div>
+          {Object.keys(categoryBreakdown).length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {Object.entries(categoryBreakdown).map(([cat, count]) => (
+                <div key={cat} className="rounded-lg bg-slate-50 dark:bg-white/5 p-2.5">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 block capitalize">{cat}</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">{count} items</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">No category data recorded in database.</p>
+          )}
         </div>
       )}
 
@@ -195,20 +203,24 @@ export default function ReportDetails({ report, onDownload }) {
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
             Gender & Age Demographics
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {Object.entries(genderBreakdown).map(([gender, count]) => (
-              <div key={gender} className="rounded-xl bg-slate-50 dark:bg-white/5 p-3">
-                <span className="text-xs text-slate-400 uppercase">{gender}</span>
-                <p className="text-lg font-bold text-slate-900 dark:text-white">{count}</p>
-              </div>
-            ))}
-            {ageGroupBreakdown && Object.entries(ageGroupBreakdown).map(([ageGroup, count]) => (
-              <div key={ageGroup} className="rounded-xl bg-slate-50 dark:bg-white/5 p-3">
-                <span className="text-xs text-slate-400">Age: {ageGroup}</span>
-                <p className="text-lg font-bold text-slate-900 dark:text-white">{count}</p>
-              </div>
-            ))}
-          </div>
+          {Object.keys(genderBreakdown).length > 0 || (ageGroupBreakdown && Object.keys(ageGroupBreakdown).length > 0) ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {Object.entries(genderBreakdown).map(([gender, count]) => (
+                <div key={gender} className="rounded-xl bg-slate-50 dark:bg-white/5 p-3">
+                  <span className="text-xs text-slate-400 uppercase">{gender}</span>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white">{count}</p>
+                </div>
+              ))}
+              {ageGroupBreakdown && Object.entries(ageGroupBreakdown).map(([ageGroup, count]) => (
+                <div key={ageGroup} className="rounded-xl bg-slate-50 dark:bg-white/5 p-3">
+                  <span className="text-xs text-slate-400">Age: {ageGroup}</span>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white">{count}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">No demographic data recorded in database.</p>
+          )}
         </div>
       )}
 

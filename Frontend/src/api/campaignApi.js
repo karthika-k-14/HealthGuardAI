@@ -1,93 +1,92 @@
 import apiClient from './axios';
 
-/**
- * Wraps the real Campaign backend (CampaignController: /campaigns/** for
- * reads, /admin/campaigns/** for writes). Talks to the real backend over
- * HTTP via the shared apiClient (Bearer token attached automatically),
- * mirroring the citizenProfileApi.js pattern.
- */
+function formatStatus(status) {
+  if (!status) return 'Active';
+  const s = String(status).trim().toLowerCase();
+  if (s === 'scheduled') return 'Scheduled';
+  if (s === 'completed') return 'Completed';
+  return 'Active';
+}
 
 function mapCampaign(data) {
   if (!data) return null;
+  const name = data.campaignName || data.title || 'Untitled Campaign';
+  const type = data.campaignType || data.type || 'Awareness';
+  const status = formatStatus(data.status);
+  const progress = Number(data.progressPercentage ?? data.progress ?? 0);
+  const reach = data.peopleReached ?? data.reach ?? 0;
+  const village = data.villageName || data.village_name || data.village || data.district || '';
+
   return {
     id: data.id,
-    uuid: data.uuid,
-    title: data.title,
-    type: data.type,
-    status: (data.status || '').toLowerCase(),
-    district: data.district,
-    startDate: data.startDate,
-    endDate: data.endDate,
-    reach: data.reach ?? 0,
-    progress: data.progress ?? 0,
-    createdAt: data.createdAt,
-    updatedAt: data.updatedAt,
+    campaignName: name,
+    title: name,
+    campaignType: type,
+    type,
+    status,
+    progressPercentage: progress,
+    progress,
+    startDate: data.startDate || data.start_date || '',
+    endDate: data.endDate || data.end_date || '',
+    peopleReached: reach,
+    reach,
+    villageName: village,
+    village,
+    district: data.district || '',
+    description: data.description || '',
+    createdAt: data.createdAt || data.created_at,
   };
 }
 
-function toStatusPayload(status) {
-  return status ? status.toUpperCase() : undefined;
-}
-
-// ---- List / Details --------------------------------------------------
 
 export async function fetchCampaigns() {
-  const { data } = await apiClient.get('/campaigns');
-  return (data || []).map(mapCampaign);
+  try {
+    const { data } = await apiClient.get('/api/campaigns');
+    const list = data?.data || data || [];
+    if (Array.isArray(list)) {
+      return list.map(mapCampaign);
+    }
+  } catch (err) {
+    console.warn('Failed to fetch from /api/campaigns, trying /api/officer/campaigns:', err?.message);
+  }
+
+  try {
+    const { data } = await apiClient.get('/api/officer/campaigns');
+    const list = data?.data || data || [];
+    return Array.isArray(list) ? list.map(mapCampaign) : [];
+  } catch (err) {
+    console.error('Failed to fetch campaigns from backend:', err);
+    return [];
+  }
 }
 
 export async function fetchCampaignById(id) {
-  const { data } = await apiClient.get(`/campaigns/${id}`);
-  return mapCampaign(data);
+  const { data } = await apiClient.get(`/api/campaigns/${id}`);
+  return mapCampaign(data?.data || data);
 }
-
-// ---- Create ------------------------------------------------------
 
 export async function addCampaign(campaign) {
-  const { data } = await apiClient.post('/admin/campaigns', {
-    title: campaign.title,
-    type: campaign.type || null,
-    status: toStatusPayload(campaign.status) || 'DRAFT',
-    district: campaign.district || null,
-    startDate: campaign.startDate || null,
-    endDate: campaign.endDate || null,
-    reach: campaign.reach ?? 0,
-    progress: campaign.progress ?? 0,
-  });
-  return mapCampaign(data);
+  console.log('[campaignApi] addCampaign payload:', campaign);
+  console.log('[campaignApi] villageName in payload:', campaign.villageName);
+  const { data } = await apiClient.post('/api/campaigns', campaign);
+  console.log('[campaignApi] addCampaign response:', data?.data || data);
+  return mapCampaign(data?.data || data);
 }
-
-// ---- Update (also backs publish/schedule below) -----------------------
 
 export async function updateCampaign(id, changes = {}) {
-  const current = await fetchCampaignById(id);
-  const merged = { ...current, ...changes };
-  const { data } = await apiClient.put(`/admin/campaigns/${id}`, {
-    title: merged.title,
-    type: merged.type || null,
-    status: toStatusPayload(merged.status),
-    district: merged.district || null,
-    startDate: merged.startDate || null,
-    endDate: merged.endDate || null,
-    reach: merged.reach ?? 0,
-    progress: merged.progress ?? 0,
-  });
-  return mapCampaign(data);
+  const { data } = await apiClient.put(`/api/campaigns/${id}`, changes);
+  return mapCampaign(data?.data || data);
 }
 
-// ---- Delete ------------------------------------------------------
-
 export async function deleteCampaign(id) {
-  await apiClient.delete(`/admin/campaigns/${id}`);
+  await apiClient.delete(`/api/campaigns/${id}`);
   return { id, deleted: true };
 }
 
-// ---- Convenience wrappers used by AdminCampaignManagement.jsx ---------
-
 export async function publishCampaign(id) {
-  return updateCampaign(id, { status: 'active' });
+  return updateCampaign(id, { status: 'ACTIVE' });
 }
 
 export async function scheduleCampaign(id, startDate) {
-  return updateCampaign(id, { status: 'scheduled', startDate });
+  return updateCampaign(id, { status: 'SCHEDULED', startDate });
 }

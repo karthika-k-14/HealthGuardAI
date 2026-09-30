@@ -19,15 +19,8 @@ import Button from '../../components/common/Button';
 import Logo from '../../components/common/Logo';
 import { useAuth } from '../../contexts/AuthContext';
 import { PATHS } from '../../constants/routes';
-import { ROLE_LABELS } from '../../constants/roles';
 
-const DEMO_ACCOUNTS = [
-  { email: 'ananya.sharma@healthguard.in', password: 'demo1234', role: ROLE_LABELS.citizen },
-  { email: 'lakshmi.devi@healthguard.in', password: 'demo1234', role: ROLE_LABELS.asha },
-  { email: 'rahul.menon@healthguard.in', password: 'demo1234', role: ROLE_LABELS.pharmacist },
-  { email: 'priya.raghunathan@healthguard.in', password: 'demo1234', role: ROLE_LABELS.officer },
-  { email: 'admin@healthguard.com', password: 'Admin@123', role: ROLE_LABELS.admin },
-];
+
 
 const HIGHLIGHTS = [
   { icon: Activity, text: 'Real-time district health surveillance' },
@@ -52,12 +45,42 @@ export default function Login() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm({ defaultValues: { email: '', password: '' } });
 
-  const goAfterAuth = (redirectTo) => {
-    const target = location.state?.from?.pathname || redirectTo || PATHS.HOME;
+  const goAfterAuth = (redirectTo, mustChangePassword, authUser) => {
+    if (mustChangePassword) {
+      navigate(PATHS.CHANGE_PASSWORD, { replace: true });
+      return;
+    }
+    const fromPath = location.state?.from?.pathname;
+    let target = redirectTo || PATHS.HOME;
+
+    // Only redirect to fromPath if it does not belong to a different role's workspace
+    if (fromPath && fromPath !== PATHS.COMPLETE_PROFILE && fromPath !== '/complete-profile' && fromPath !== '/unauthorized') {
+      const userRole = (authUser?.role || '').toLowerCase();
+      const isRoleSpecificPath =
+        (fromPath.startsWith('/citizen') && userRole !== 'citizen') ||
+        (fromPath.startsWith('/asha') && userRole !== 'asha') ||
+        (fromPath.startsWith('/pharmacist') && userRole !== 'pharmacist') ||
+        (fromPath.startsWith('/health-officer') && userRole !== 'health_officer') ||
+        (fromPath.startsWith('/admin') && userRole !== 'admin');
+
+      if (!isRoleSpecificPath) {
+        target = fromPath;
+      }
+    }
+
+    if (authUser?.role === 'citizen') {
+      if (authUser?.profileCompleted === true) {
+        if (target === PATHS.COMPLETE_PROFILE || target === '/complete-profile') {
+          target = PATHS.CITIZEN;
+        }
+      } else {
+        target = PATHS.COMPLETE_PROFILE;
+      }
+    }
+
     navigate(target, { replace: true });
   };
 
@@ -65,7 +88,7 @@ export default function Login() {
     const result = await login(values);
     if (result.success) {
       toast.success('Signed in successfully');
-      goAfterAuth(result.redirectTo);
+      goAfterAuth(result.redirectTo, result.mustChangePassword, result.user);
     } else if (result.status) {
       // Account exists but isn't ACTIVE yet (or no longer is) — show
       // the same page a fresh staff registration lands on, with the
@@ -92,11 +115,6 @@ export default function Login() {
 
   const handleForgotPassword = () => {
     toast('Password reset isn\u2019t available in this demo build.', { icon: 'ℹ️' });
-  };
-
-  const fillDemo = (email, password) => {
-    setValue('email', email);
-    setValue('password', password);
   };
 
   return (
@@ -276,24 +294,12 @@ export default function Login() {
 
           <div className="mt-8 border-t border-slate-200/70 pt-6 dark:border-white/10">
             <p className="text-center text-xs font-medium uppercase tracking-wide text-slate-400">
-              Prefill Login Credentials
+              Sign in with your registered account credentials
             </p>
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
-              {DEMO_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.email}
-                  type="button"
-                  onClick={() => fillDemo(acc.email, acc.password)}
-                  className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-brand-400 hover:text-brand-600 dark:border-white/10 dark:text-slate-300 dark:hover:text-brand-400"
-                >
-                  {acc.role}
-                </button>
-              ))}
-            </div>
           </div>
 
           <p className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link to={PATHS.REGISTER} className="font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400">
               Create an account
             </Link>

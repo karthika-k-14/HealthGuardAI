@@ -1,83 +1,163 @@
 import apiClient from './axios';
 
-/**
- * Wraps the real Awareness Article backend (AwarenessArticleController:
- * /awareness-articles/** for reads, /admin/awareness-articles/** for
- * writes). Talks to the real backend over HTTP via the shared apiClient
- * (Bearer token attached automatically), mirroring the
- * citizenProfileApi.js pattern.
- */
-
-function mapArticle(data) {
-  if (!data) return null;
-  return {
-    id: data.id,
-    uuid: data.uuid,
-    title: data.title,
-    category: data.category,
-    summary: data.summary,
-    content: data.content,
-    imageUrl: data.imageUrl,
-    author: data.author,
-    publishedAt: data.publishedAt,
-    createdAt: data.createdAt,
-    updatedAt: data.updatedAt,
-  };
-}
-
-// ---- View ------------------------------------------------------------
-
-export async function fetchAwarenessArticles() {
-  const { data } = await apiClient.get('/awareness-articles');
-  return (data || []).map(mapArticle);
+export async function fetchAwarenessArticles(category, status = 'PUBLISHED') {
+  try {
+    const { data } = await apiClient.get('/api/articles', {
+      params: { category, status }
+    });
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.data)) return data.data;
+    if (Array.isArray(data?.content)) return data.content;
+    return [];
+  } catch (err) {
+    console.error('Failed to fetch articles:', err);
+    return [];
+  }
 }
 
 export async function fetchAwarenessArticleById(id) {
-  const { data } = await apiClient.get(`/awareness-articles/${id}`);
-  return mapArticle(data);
+  try {
+    const { data } = await apiClient.get(`/api/articles/${id}`);
+    return data;
+  } catch (err) {
+    console.error('Failed to fetch article:', err);
+    throw err;
+  }
 }
-
-// ---- Search ------------------------------------------------------------
-
-export async function searchAwarenessArticles(query, category) {
-  const { data } = await apiClient.get('/awareness-articles/search', {
-    params: {
-      query: query || undefined,
-      category: category || undefined,
-    },
-  });
-  return (data || []).map(mapArticle);
-}
-
-// ---- Admin: Add / Update / Delete ---------------------------------------
 
 export async function addAwarenessArticle(article) {
-  const { data } = await apiClient.post('/admin/awareness-articles', {
-    title: article.title,
-    category: article.category || null,
-    summary: article.summary || null,
-    content: article.content || null,
-    imageUrl: article.imageUrl || null,
-    author: article.author || null,
-    publishedAt: article.publishedAt || null,
-  });
-  return mapArticle(data);
+  try {
+    const { data } = await apiClient.post('/api/articles', article);
+    return data;
+  } catch (err) {
+    console.error('Failed to create article:', err);
+    throw err;
+  }
 }
 
 export async function updateAwarenessArticle(articleId, article) {
-  const { data } = await apiClient.put(`/admin/awareness-articles/${articleId}`, {
-    title: article.title,
-    category: article.category || null,
-    summary: article.summary || null,
-    content: article.content || null,
-    imageUrl: article.imageUrl || null,
-    author: article.author || null,
-    publishedAt: article.publishedAt || null,
-  });
-  return mapArticle(data);
+  try {
+    const { data } = await apiClient.put(`/api/articles/${articleId}`, article);
+    return data;
+  } catch (err) {
+    console.error('Failed to update article:', err);
+    throw err;
+  }
+}
+
+export async function publishAwarenessArticle(articleId) {
+  try {
+    const { data } = await apiClient.put(`/api/articles/${articleId}/publish`);
+    return data;
+  } catch (err) {
+    console.error('Failed to publish article:', err);
+    throw err;
+  }
+}
+
+export async function archiveAwarenessArticle(articleId) {
+  try {
+    const { data } = await apiClient.put(`/api/articles/${articleId}/archive`);
+    return data;
+  } catch (err) {
+    console.error('Failed to archive article:', err);
+    throw err;
+  }
+}
+
+export async function searchAwarenessArticles(keyword, category, status = 'PUBLISHED', page = 0, size = 20) {
+  try {
+    const { data } = await apiClient.get('/api/articles/search', {
+      params: { keyword, category, status, page, size }
+    });
+    return data;
+  } catch (err) {
+    console.error('Failed to search articles:', err);
+    return { content: [], totalPages: 1 };
+  }
 }
 
 export async function deleteAwarenessArticle(articleId) {
-  await apiClient.delete(`/admin/awareness-articles/${articleId}`);
-  return true;
+  try {
+    await apiClient.delete(`/api/articles/${articleId}`);
+    return true;
+  } catch (err) {
+    console.error('Failed to delete article:', err);
+    throw err;
+  }
+}
+
+/**
+ * Requirement: GET /api/diseases/search?q={query}
+ * Strictly from backend microservice and PostgreSQL search engine
+ */
+export async function searchDiseaseAwareness(query = '', language = 'english', citizenId = null) {
+  try {
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const targetCitizenId = citizenId || userObj.citizenId || userObj.userId || userObj.id;
+
+    const { data } = await apiClient.get('/api/diseases/search', {
+      params: { q: query, language, citizenId: targetCitizenId }
+    });
+    if (data?.data) return data.data;
+    if (data && data.diseaseName) return data;
+  } catch (err) {
+    console.error('Failed to search disease awareness from backend:', err);
+  }
+  return null;
+}
+
+export async function getDiseaseSuggestions(prefix = '', language = 'english') {
+  try {
+    const { data } = await apiClient.get('/api/diseases/suggestions', {
+      params: { q: prefix, language }
+    });
+    if (data?.data && Array.isArray(data.data)) return data.data;
+    if (Array.isArray(data)) return data;
+  } catch (err) {
+    console.error('Failed to fetch disease suggestions:', err);
+  }
+  return [];
+}
+
+export async function getTrendingDiseases(language = 'english') {
+  try {
+    const { data } = await apiClient.get('/api/diseases/search', {
+      params: { q: '', language }
+    });
+    if (data?.data) return data.data;
+    if (data && data.diseaseName) return data;
+  } catch (err) {
+    console.error('Failed to fetch trending diseases:', err);
+  }
+  return null;
+}
+
+export async function fetchDiseaseSearchHistory(citizenId = null) {
+  try {
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const targetCitizenId = citizenId || userObj.citizenId || userObj.userId || userObj.id;
+
+    const { data } = await apiClient.get('/api/diseases/history', {
+      params: { citizenId: targetCitizenId }
+    });
+    return data?.data || { recentSearches: [], topSearched: [] };
+  } catch (err) {
+    console.error('Failed to fetch search history:', err);
+    return { recentSearches: [], topSearched: [] };
+  }
+}
+
+export async function recordDiseaseSearch(diseaseName, citizenId = null) {
+  try {
+    const userObj = JSON.parse(localStorage.getItem('user') || '{}');
+    const targetCitizenId = citizenId || userObj.citizenId || userObj.userId || userObj.id;
+
+    await apiClient.post('/api/diseases/history', {
+      diseaseName,
+      citizenId: targetCitizenId
+    });
+  } catch (err) {
+    console.debug('Failed to record search history:', err?.message);
+  }
 }

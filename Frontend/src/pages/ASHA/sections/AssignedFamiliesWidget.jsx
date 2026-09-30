@@ -45,7 +45,7 @@ export default function AssignedFamiliesWidget() {
       <div className="mt-4 space-y-3">
         {isLoading && Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
         {!isLoading &&
-          families.slice(0, 4).map((f) => (
+          (Array.isArray(families) ? families : []).slice(0, 4).map((f) => (
             <div key={f.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200/70 px-3 py-2.5 dark:border-white/10">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{f.headName}</p>

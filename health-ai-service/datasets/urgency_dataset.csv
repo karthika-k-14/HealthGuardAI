@@ -1,0 +1,13 @@
+symptoms,urgency,score
+"mild cold runny nose slight tiredness",LOW,15
+"slight headache dry throat normal temperature",LOW,20
+"minor skin itching small scratch",LOW,10
+"fever 100F body weakness loss of appetite",MEDIUM,45
+"persistent cough for 5 days mild stomach discomfort",MEDIUM,50
+"moderate headache joint pain low energy",MEDIUM,40
+"breathing difficulty high fever 103F chest discomfort",HIGH,78
+"coughing blood severe abdominal pain continuous vomiting",HIGH,85
+"high fever with convulsion severe dehydration infant diarrhea",HIGH,88
+"chest pain radiating to arm unconsciousness patient unresponsive",CRITICAL,98
+"severe respiratory failure not breathing blue lips sudden collapse",CRITICAL,100
+"profuse bleeding from head injury stroke paralysis sudden numbness",CRITICAL,95

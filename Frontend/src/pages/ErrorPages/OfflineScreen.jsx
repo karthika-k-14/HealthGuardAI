@@ -22,7 +22,7 @@ export default function OfflineScreen({ visible }) {
           role="alert"
         >
           <WifiOff className="h-4 w-4" aria-hidden="true" />
-          You're offline. Some features may not work until your connection is restored.
+          You&apos;re offline. Some features may not work until your connection is restored.
         </motion.div>
       )}
     </AnimatePresence>

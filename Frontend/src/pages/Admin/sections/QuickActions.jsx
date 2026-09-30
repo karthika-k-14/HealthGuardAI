@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users, ShieldCheck, Megaphone, Bug, Hospital, FileBarChart, Settings } from 'lucide-react';
+import { Users, ShieldCheck, Megaphone, Settings } from 'lucide-react';
 import { PATHS } from '../../../constants/routes';
 
 import React from 'react';
@@ -9,11 +9,9 @@ const ACTIONS = [
   { label: 'Manage Users', icon: Users, to: PATHS.ADMIN_USERS, tone: 'text-brand-600 dark:text-brand-400 bg-brand-500/10' },
   { label: 'Manage Roles', icon: ShieldCheck, to: PATHS.ADMIN_ROLES, tone: 'text-sky-600 dark:text-sky-400 bg-sky-500/10' },
   { label: 'Manage Campaigns', icon: Megaphone, to: PATHS.ADMIN_CAMPAIGNS, tone: 'text-purple-600 dark:text-purple-300 bg-purple-500/10' },
-  { label: 'Manage Diseases', icon: Bug, to: PATHS.ADMIN_DISEASES, tone: 'text-rose-600 dark:text-rose-400 bg-rose-500/10' },
-  { label: 'Manage Hospitals', icon: Hospital, to: PATHS.ADMIN_HOSPITALS, tone: 'text-indigo-600 dark:text-indigo-300 bg-indigo-500/10' },
-  { label: 'View Reports', icon: FileBarChart, to: PATHS.ADMIN_REPORTS, tone: 'text-emerald-600 dark:text-emerald-300 bg-emerald-500/10' },
   { label: 'Platform Settings', icon: Settings, to: PATHS.SETTINGS, tone: 'text-amber-600 dark:text-amber-300 bg-signal-amber/10' },
 ];
+
 
 export default function QuickActions() {
   return (

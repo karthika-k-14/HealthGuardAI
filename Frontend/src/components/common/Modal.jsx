@@ -4,31 +4,42 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
-export default function Modal({ open, onClose, title, children, className }) {
+export default function Modal({ open, isOpen, onClose, title, children, className }) {
+  const isModalOpen = Boolean(open ?? isOpen);
   const dialogRef = useRef(null);
+  const onCloseRef = useRef(onClose);
 
   useEffect(() => {
-    if (!open) return;
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') onClose?.();
+      if (e.key === 'Escape') onCloseRef.current?.();
     };
     document.addEventListener('keydown', onKeyDown);
     document.body.style.overflow = 'hidden';
-    // Move focus into the dialog so keyboard users land somewhere
-    // sensible instead of staying on the trigger button behind it.
-    const focusTimer = setTimeout(() => dialogRef.current?.focus(), 50);
+
+    // Focus dialog only if current focus is outside the modal container
+    const focusTimer = setTimeout(() => {
+      if (dialogRef.current && !dialogRef.current.contains(document.activeElement)) {
+        dialogRef.current.focus();
+      }
+    }, 50);
+
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       document.body.style.overflow = '';
       clearTimeout(focusTimer);
     };
-  }, [open, onClose]);
+  }, [isModalOpen]);
 
   if (typeof document === 'undefined') return null;
 
   return createPortal(
     <AnimatePresence>
-      {open && (
+      {isModalOpen && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}

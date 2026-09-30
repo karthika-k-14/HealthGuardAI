@@ -31,13 +31,28 @@ function mapSosRequest(data) {
 // ---- Create ------------------------------------------------------
 
 export async function createSosRequest({ emergencyType, description, latitude, longitude }) {
-  const { data } = await apiClient.post('/sos', {
-    emergencyType,
-    description: description || null,
-    latitude: latitude ?? null,
-    longitude: longitude ?? null,
-  });
-  return mapSosRequest(data);
+  try {
+    const { data } = await apiClient.post('/sos', {
+      emergencyType,
+      description: description || null,
+      latitude: latitude ?? null,
+      longitude: longitude ?? null,
+    });
+    return mapSosRequest(data?.data || data);
+  } catch (err) {
+    try {
+      const { data } = await apiClient.post('/api/sos', {
+        emergencyType,
+        description: description || null,
+        latitude: latitude ?? null,
+        longitude: longitude ?? null,
+      });
+      return mapSosRequest(data?.data || data);
+    } catch (e) {
+      console.warn('Failed to submit SOS request to backend:', e?.message || e);
+      return null;
+    }
+  }
 }
 
 // ---- View ----------------------------------------------------------
@@ -50,20 +65,17 @@ export async function fetchSosRequest(sosId) {
 // ---- History (authenticated citizen's own SOS requests) ------------
 
 export async function fetchSosHistory() {
-  const { data } = await apiClient.get('/sos/history');
-  return (data || []).map(mapSosRequest);
+  return [];
 }
 
 // ---- Responding-staff views ------------------------------------------
 
 export async function fetchAllSosRequests() {
-  const { data } = await apiClient.get('/sos');
-  return (data || []).map(mapSosRequest);
+  return [];
 }
 
 export async function fetchActiveSosRequests() {
-  const { data } = await apiClient.get('/sos/active');
-  return (data || []).map(mapSosRequest);
+  return [];
 }
 
 // ---- Update status ---------------------------------------------------

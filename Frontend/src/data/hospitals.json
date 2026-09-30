@@ -1,6 +1,0 @@
-[
-  { "id": "hsp_001", "name": "Coimbatore District General Hospital", "type": "Government", "beds": 450, "district": "Coimbatore", "lat": 11.0168, "lng": 76.9558, "rating": 4.1, "distanceKm": 2.4, "emergency": true, "phone": "+91 422 230 1010", "specialties": ["Emergency", "General Medicine", "Orthopedics"] },
-  { "id": "hsp_002", "name": "PSG Hospitals", "type": "Private", "beds": 700, "district": "Coimbatore", "lat": 11.0246, "lng": 77.0028, "rating": 4.6, "distanceKm": 5.1, "emergency": true, "phone": "+91 422 257 0170", "specialties": ["Cardiology", "Oncology", "Emergency"] },
-  { "id": "hsp_003", "name": "Ganga Hospital", "type": "Private", "beds": 500, "district": "Coimbatore", "lat": 11.0022, "lng": 76.9694, "rating": 4.5, "distanceKm": 3.8, "emergency": true, "phone": "+91 422 242 4242", "specialties": ["Orthopedics", "Trauma Care", "Emergency"] },
-  { "id": "hsp_004", "name": "Periyanaickenpalayam PHC", "type": "Primary Health Centre", "beds": 30, "district": "Coimbatore", "lat": 11.0801, "lng": 76.9603, "rating": 3.8, "distanceKm": 8.6, "emergency": false, "phone": "+91 422 265 5100", "specialties": ["General Medicine", "Maternal Care"] }
-]

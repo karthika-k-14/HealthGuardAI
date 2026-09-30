@@ -19,6 +19,14 @@ export default function WellnessTipWidget() {
 
   useEffect(load, []);
 
+  const getTipText = () => {
+    if (!tip) return '';
+    if (typeof tip === 'string') return tip;
+    return tip.tip || tip.description || tip.recommendation || tip.message || tip.title || '';
+  };
+
+  const tipText = getTipText();
+
   return (
     <div className="glass-panel p-6">
       <div className="flex items-center justify-between">
@@ -40,7 +48,7 @@ export default function WellnessTipWidget() {
       {isLoading ? (
         <Skeleton className="mt-3 h-10 w-full" />
       ) : (
-        <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{t(tip)}</p>
+        <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{t(tipText)}</p>
       )}
     </div>
   );

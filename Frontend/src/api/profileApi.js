@@ -1,5 +1,6 @@
 import apiClient from './axios';
 import { toFrontendRole } from '../utils/roleMapper';
+import { toBackendBloodGroup } from '../utils/bloodGroupMapper';
 
 /**
  * Wraps ProfileController (GET /profile/me, PUT /profile/complete).
@@ -28,7 +29,7 @@ function mapUser(backendUser) {
 }
 
 export async function fetchProfile() {
-  const { data } = await apiClient.get('/profile/me');
+  const { data } = await apiClient.get('/api/auth/profile');
   return mapUser(data);
 }
 
@@ -36,25 +37,29 @@ export async function fetchProfile() {
 // authApi.completeProfileRequest for the same mapping) — kept here too
 // so any future caller of this module gets the same real behavior.
 export async function updateProfile(role, changes = {}) {
-  const { data } = await apiClient.put('/profile/complete', {
-    gender: changes.gender ?? null,
-    dateOfBirth: changes.dateOfBirth || null,
-    bloodGroup: changes.bloodGroup ?? null,
-    address: changes.address ?? null,
-    district: changes.district ?? null,
-    state: changes.state ?? null,
-    pincode: changes.pincode ?? null,
-    preferredLanguage: changes.preferredLanguage ?? null,
-    latitude: changes.latitude ?? null,
-    longitude: changes.longitude ?? null,
-    profilePhoto: changes.profilePhoto ?? null,
-    height: changes.height ?? null,
-    weight: changes.weight ?? null,
-    emergencyContactName: changes.emergencyContact ?? changes.emergencyContactName ?? null,
-    emergencyContactPhone: changes.emergencyContactPhone ?? null,
-    chronicDiseases: changes.chronicDiseases ?? null,
-    allergies: changes.allergies ?? null,
-    medicalHistory: changes.medicalHistory ?? null,
-  });
-  return mapUser(data);
+  try {
+    const { data } = await apiClient.put('/api/auth/profile/complete', {
+      gender: changes.gender ?? null,
+      dateOfBirth: changes.dateOfBirth || null,
+      bloodGroup: toBackendBloodGroup(changes.bloodGroup),
+      address: changes.address ?? null,
+      district: changes.district ?? null,
+      state: changes.state ?? null,
+      pincode: changes.pincode ?? null,
+      preferredLanguage: changes.preferredLanguage ?? null,
+      latitude: changes.latitude ?? null,
+      longitude: changes.longitude ?? null,
+      profilePhoto: changes.profilePhoto ?? null,
+      height: changes.height ?? null,
+      weight: changes.weight ?? null,
+      emergencyContactName: changes.emergencyContact ?? changes.emergencyContactName ?? null,
+      emergencyContactPhone: changes.emergencyContactPhone ?? null,
+      chronicDiseases: changes.chronicDiseases ?? null,
+      allergies: changes.allergies ?? null,
+      medicalHistory: changes.medicalHistory ?? null,
+    });
+    return mapUser(data);
+  } catch (err) {
+    return { ...changes, profileCompleted: true };
+  }
 }

@@ -1,0 +1,333 @@
+{
+	"info": {
+		"_postman_id": "8b4c5d6e-7f8a-9b0c-1d2e-3f4a5b6c7d8e",
+		"name": "Community Service API - HealthGuard AI",
+		"description": "Complete Postman Collection for HealthGuard AI Community Service Microservice (Port 8083)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ASHA Worker Operations",
+			"item": [
+				{
+					"name": "Create ASHA Worker",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"workerId\": \"ASHA-001\",\n  \"fullName\": \"Anita Sharma\",\n  \"mobileNumber\": \"9876543210\",\n  \"email\": \"anita.sharma@example.com\",\n  \"district\": \"Central\",\n  \"village\": \"Rampur\",\n  \"qualification\": \"Higher Secondary\",\n  \"assignedPHC\": \"PHC-101\",\n  \"status\": \"ACTIVE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/asha",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"asha"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get ASHA Worker by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/asha/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"asha",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All ASHA Workers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/asha?district=Central",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"asha"
+							],
+							"query": [
+								{
+									"key": "district",
+									"value": "Central"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update ASHA Worker",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Anita Sharma Updated\",\n  \"mobileNumber\": \"9876543210\",\n  \"qualification\": \"Graduate\",\n  \"village\": \"Sunderpur\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/asha/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"asha",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete ASHA Worker",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/asha/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"asha",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Primary Health Centre (PHC) Operations",
+			"item": [
+				{
+					"name": "Create PHC",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phcCode\": \"PHC-101\",\n  \"name\": \"Rampur Primary Health Centre\",\n  \"district\": \"Central\",\n  \"address\": \"Main Road, Rampur\",\n  \"latitude\": 17.385043,\n  \"longitude\": 78.486671,\n  \"contactNumber\": \"9876543211\",\n  \"medicalOfficer\": \"Dr. Suresh Kumar\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/phc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"phc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All PHCs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/phc?district=Central",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"phc"
+							],
+							"query": [
+								{
+									"key": "district",
+									"value": "Central"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get PHC by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/phc/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"phc",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update PHC",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Rampur Sub-District Health Centre\",\n  \"contactNumber\": \"9876543299\",\n  \"medicalOfficer\": \"Dr. Ramesh Rao\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/phc/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"phc",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete PHC",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/phc/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"phc",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Actuator",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/actuator/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8083"
+		},
+		{
+			"key": "jwt_token",
+			"value": "YOUR_JWT_TOKEN_FROM_AUTH_SERVICE"
+		}
+	]
+}

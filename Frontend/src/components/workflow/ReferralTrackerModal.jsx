@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { GitPullRequest, Search, Building2, User, CheckCircle, ArrowRight, X } from 'lucide-react';
+import { GitPullRequest, Search, ArrowRight, X } from 'lucide-react';
 import { trackReferral } from '../../api/workflowApi';
 import { Spinner } from '../common/Loader';
 import Button from '../common/Button';

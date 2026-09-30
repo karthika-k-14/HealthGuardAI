@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { UserCheck, Building2, User, X, CheckCircle } from 'lucide-react';
+import { UserCheck, X, CheckCircle } from 'lucide-react';
 import { assignCase } from '../../api/workflowApi';
 import Button from '../common/Button';
 

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarPlus, UserPlus, Syringe, Baby, MessageCircle, Siren } from 'lucide-react';
+import { CalendarPlus, UserPlus, Syringe, MessageCircle, Siren } from 'lucide-react';
 import { PATHS } from '../../../constants/routes';
 
 import React from 'react';
@@ -17,7 +17,7 @@ export default function QuickActions() {
   return (
     <div className="surface-card p-6">
       <p className="text-sm font-semibold text-slate-900 dark:text-white">Quick Actions</p>
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {ACTIONS.map((action, i) => (
           <motion.div
             key={action.label}

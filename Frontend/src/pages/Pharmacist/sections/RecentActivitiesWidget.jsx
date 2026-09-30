@@ -31,6 +31,9 @@ export default function RecentActivitiesWidget() {
 
       <ol className="mt-4 space-y-3 border-l border-slate-200/70 pl-4 dark:border-white/10">
         {isLoading && Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+        {!isLoading && activities.length === 0 && (
+          <p className="text-sm text-slate-400">No recent pharmacy activities recorded.</p>
+        )}
         {!isLoading &&
           activities.map((a) => (
             <li key={a.id} className="relative">

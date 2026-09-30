@@ -1,0 +1,26 @@
+@echo off
+echo Starting HealthGuard Microservices...
+
+echo Launching Health AI Service (Port 8000)...
+start "HealthGuard Health AI Service (8000)" cmd /k "cd /d %~dp0health-ai-service && python app.py"
+
+echo Launching Gateway Service (Port 8080)...
+start "Gateway Service (8080)" cmd /k "cd /d %~dp0backend\gateway-service && mvn spring-boot:run"
+
+echo Launching Auth Service (Port 8081)...
+start "Auth Service (8081)" cmd /k "cd /d %~dp0backend\auth-service && mvn spring-boot:run"
+
+echo Launching Admin Service (Port 8085)...
+start "Admin Service (8085)" cmd /k "cd /d %~dp0backend\admin-service && mvn spring-boot:run"
+
+echo Launching AI Service (Port 8084)...
+start "AI Service (8084)" cmd /k "cd /d %~dp0backend\ai-service && mvn spring-boot:run"
+
+echo Launching Citizen Service (Port 8082)...
+start "Citizen Service (8082)" cmd /k "cd /d %~dp0backend\citizen-service && mvn spring-boot:run"
+
+echo Launching Community Service (Port 8083)...
+start "Community Service (8083)" cmd /k "cd /d %~dp0backend\community-service && mvn spring-boot:run"
+
+echo All microservices launched in separate terminals.
+pause

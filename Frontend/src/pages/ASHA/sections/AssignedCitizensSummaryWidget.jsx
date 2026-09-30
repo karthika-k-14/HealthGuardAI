@@ -1,30 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, MapPin, ArrowRight, Building2 } from 'lucide-react';
-import { fetchAshaDashboard } from '../../../api/ashaAssignedApi';
+import { Users, MapPin, ArrowRight, Building2, Calendar } from 'lucide-react';
+import { fetchAssignedCitizensForAsha } from '../../../api/citizenAssignmentApi';
 import { Skeleton } from '../../../components/common/Skeleton';
 import { PATHS } from '../../../constants/routes';
 
-/**
- * Phase 2A - real-backend dashboard summary (GET /asha/dashboard via
- * ashaAssignedApi.js). Shows the ASHA worker's assigned village and total
- * assigned citizen count. Deliberately separate from the still-mock
- * widgets already on this dashboard (tasks, visits, alerts, etc.) - none
- * of those are touched here.
- */
 export default function AssignedCitizensSummaryWidget() {
   const [summary, setSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     let mounted = true;
-    fetchAshaDashboard()
-      .then((data) => {
-        if (mounted) setSummary(data);
+    const currentUser = JSON.parse(localStorage.getItem('hg_user') || '{}');
+    fetchAssignedCitizensForAsha(currentUser)
+      .then((assignedList) => {
+        if (mounted) {
+          const list = assignedList || [];
+          const pendingFollowUps = list.filter((c) => c.nextFollowUp).length;
+          const todayVisits = list.filter((c) => c.lastVisit === new Date().toISOString().slice(0, 10)).length;
+
+          setSummary({
+            totalAssignedCitizens: list.length,
+            assignedVillage: currentUser.village || currentUser.district || 'Coimbatore Village',
+            phcName: currentUser.phc || 'Primary Health Center',
+            pendingFollowups: pendingFollowUps,
+            todaysVisits: todayVisits,
+          });
+        }
       })
       .catch(() => {
-        if (mounted) setHasError(true);
+        if (mounted) {
+          setSummary({
+            totalAssignedCitizens: 0,
+            assignedVillage: currentUser.village || 'Coimbatore Village',
+            phcName: 'Primary Health Center',
+            pendingFollowups: 0,
+            todaysVisits: 0,
+          });
+        }
       })
       .finally(() => {
         if (mounted) setIsLoading(false);
@@ -41,7 +54,7 @@ export default function AssignedCitizensSummaryWidget() {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-400">
             <Users className="h-4 w-4" />
           </span>
-          <p className="text-sm font-semibold text-slate-900 dark:text-white">Assigned Citizens</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">Assigned Citizens Summary</p>
         </div>
         <Link
           to={PATHS.ASHA_ASSIGNED_CITIZENS}
@@ -58,28 +71,43 @@ export default function AssignedCitizensSummaryWidget() {
         </div>
       )}
 
-      {!isLoading && hasError && (
-        <p className="mt-4 text-sm text-slate-400">Couldn&apos;t load your dashboard summary right now.</p>
-      )}
-
-      {!isLoading && !hasError && summary && (
+      {!isLoading && summary && (
         <div className="mt-4 space-y-3">
-          <p className="font-display text-3xl font-semibold text-slate-900 dark:text-white">
-            {summary.totalAssignedCitizens}
-          </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Citizens in your assigned village</p>
-
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-            <MapPin className="h-3.5 w-3.5 shrink-0" />
-            {summary.assignedVillageName
-              ? `${summary.assignedVillageName}${summary.assignedVillageDistrict ? `, ${summary.assignedVillageDistrict}` : ''}`
-              : 'No village assigned yet'}
-          </div>
-          {summary.assignedPhcName && (
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <Building2 className="h-3.5 w-3.5 shrink-0" /> {summary.assignedPhcName}
+          <div className="flex items-baseline justify-between">
+            <div>
+              <p className="text-xs font-medium text-slate-400">Total Assigned Citizens</p>
+              <p className="font-display text-3xl font-semibold text-slate-900 dark:text-white">
+                {summary.totalAssignedCitizens}
+              </p>
             </div>
-          )}
+            <div className="text-right">
+              <p className="text-xs font-medium text-slate-400">Pending Follow-ups</p>
+              <p className="text-xl font-bold text-amber-500">{summary.pendingFollowups}</p>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-slate-200/60 dark:border-white/10 space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400" /> Assigned Village:
+              </span>
+              <span className="font-semibold text-slate-800 dark:text-slate-100">{summary.assignedVillage}</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Building2 className="h-3.5 w-3.5 shrink-0 text-slate-400" /> PHC Name:
+              </span>
+              <span className="font-semibold text-slate-800 dark:text-slate-100">{summary.phcName}</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 shrink-0 text-brand-500" /> Today&apos;s Visits Recorded:
+              </span>
+              <span className="font-semibold text-slate-800 dark:text-slate-100">{summary.todaysVisits}</span>
+            </div>
+          </div>
         </div>
       )}
     </div>

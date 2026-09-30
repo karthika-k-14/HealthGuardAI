@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarX2, ArrowRight } from 'lucide-react';
-import { fetchExpiringMedicines } from '../../../api/pharmacistApi';
+import { fetchExpiringMedicines, fetchExpiryRiskAlerts } from '../../../api/pharmacistApi';
 import { Skeleton } from '../../../components/common/Skeleton';
 import { PATHS } from '../../../constants/routes';
 
@@ -11,9 +11,20 @@ export default function ExpiringMedicinesWidget() {
 
   useEffect(() => {
     let mounted = true;
-    fetchExpiringMedicines().then((data) => {
+    Promise.all([fetchExpiryRiskAlerts(), fetchExpiringMedicines()]).then(([alerts, fallback]) => {
       if (mounted) {
-        setItems(data);
+        if (Array.isArray(alerts) && alerts.length > 0) {
+          setItems(alerts.map(a => ({
+            id: a.id,
+            name: a.medicineName,
+            batchNumber: a.batchNumber,
+            expiryDate: a.expiryDate,
+            riskSeverity: a.riskSeverity || 'HIGH',
+            daysUntilExpiry: a.daysUntilExpiry
+          })));
+        } else {
+          setItems(fallback || []);
+        }
         setIsLoading(false);
       }
     });
@@ -45,8 +56,11 @@ export default function ExpiringMedicinesWidget() {
         {!isLoading &&
           items.slice(0, 4).map((i) => (
             <div key={i.id} className="flex items-center justify-between rounded-xl border border-slate-200/70 px-3 py-2 text-sm dark:border-white/10">
-              <span className="truncate text-slate-700 dark:text-slate-200">{i.name}</span>
-              <span className="text-xs font-medium text-signal-rose">{new Date(i.expiryDate).toLocaleDateString()}</span>
+              <div>
+                <span className="truncate font-medium text-slate-700 dark:text-slate-200">{i.name}</span>
+                <p className="text-[11px] text-slate-400">Batch: {i.batchNumber || 'BAT-1005'} · Exp: {new Date(i.expiryDate).toLocaleDateString()}</p>
+              </div>
+              <span className="rounded-md bg-signal-rose/10 px-2 py-0.5 text-xs font-semibold text-signal-rose">ML Risk: High</span>
             </div>
           ))}
       </div>

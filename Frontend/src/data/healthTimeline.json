@@ -1,8 +1,0 @@
-[
-  { "id": "tl_001", "type": "consultation", "title": "AI Consultation", "description": "Discussed persistent cough symptoms with the AI assistant.", "date": "2026-06-28" },
-  { "id": "tl_002", "type": "vaccination", "title": "COVID-19 Booster", "description": "Administered at PSG Hospitals.", "date": "2026-02-14" },
-  { "id": "tl_003", "type": "report", "title": "Blood Test Report", "description": "Routine CBC panel — all values within normal range.", "date": "2026-01-30" },
-  { "id": "tl_004", "type": "doctor", "title": "Doctor Visit — General Physician", "description": "Annual check-up at Coimbatore District General Hospital.", "date": "2025-12-18" },
-  { "id": "tl_005", "type": "medicine", "title": "Prescription — Cetirizine", "description": "Prescribed for seasonal allergy symptoms.", "date": "2025-11-10" },
-  { "id": "tl_006", "type": "vaccination", "title": "Tetanus (Td) Booster", "description": "Administered at Periyanaickenpalayam PHC.", "date": "2025-11-02" }
-]

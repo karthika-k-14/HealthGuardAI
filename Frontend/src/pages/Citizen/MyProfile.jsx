@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
   Droplet,
@@ -32,20 +33,9 @@ import {
   deleteHealthRecord,
 } from '../../api/citizenProfileApi';
 import { useLanguage } from '../../contexts/LanguageContext';
-
-const BLOOD_GROUPS = [
-  { value: '', label: 'Prefer not to say' },
-  { value: 'A_POSITIVE', label: 'A+' },
-  { value: 'A_NEGATIVE', label: 'A-' },
-  { value: 'B_POSITIVE', label: 'B+' },
-  { value: 'B_NEGATIVE', label: 'B-' },
-  { value: 'AB_POSITIVE', label: 'AB+' },
-  { value: 'AB_NEGATIVE', label: 'AB-' },
-  { value: 'O_POSITIVE', label: 'O+' },
-  { value: 'O_NEGATIVE', label: 'O-' },
-];
-
-const BLOOD_GROUP_LABEL = Object.fromEntries(BLOOD_GROUPS.map((b) => [b.value, b.label]));
+import { BLOOD_GROUP_OPTIONS, toDisplayBloodGroup } from '../../utils/bloodGroupMapper';
+import { STORAGE_KEYS } from '../../constants/storageKeys';
+import { getJSON } from '../../utils/storage';
 
 const FAMILY_RELATIONS = ['SPOUSE', 'CHILD', 'PARENT', 'SIBLING', 'GRANDPARENT', 'GRANDCHILD', 'OTHER'];
 const RECORD_TYPES = ['CONSULTATION', 'LAB_REPORT', 'PRESCRIPTION', 'VACCINATION', 'SURGERY', 'OTHER'];
@@ -75,6 +65,8 @@ function ProfileDetailsSection({ profile, onSaved }) {
   useEffect(() => {
     if (profile) {
       reset({
+        gender: profile.gender || '',
+        dateOfBirth: profile.dateOfBirth ? (String(profile.dateOfBirth).includes('T') ? String(profile.dateOfBirth).split('T')[0] : String(profile.dateOfBirth)) : '',
         bloodGroup: profile.bloodGroup || '',
         address: profile.address || '',
         district: profile.district || '',
@@ -94,26 +86,27 @@ function ProfileDetailsSection({ profile, onSaved }) {
   const onSubmit = async (values) => {
     setIsSaving(true);
     try {
-      const updated = await updateCitizenProfile({
-        gender: profile.gender,
-        dateOfBirth: profile.dateOfBirth,
-        bloodGroup: values.bloodGroup || null,
-        address: values.address,
-        district: values.district,
-        state: values.state,
-        pincode: values.pincode,
-        preferredLanguage: profile.preferredLanguage,
-        latitude: profile.latitude,
-        longitude: profile.longitude,
-        profilePhoto: profile.profilePhoto,
-        height: values.height ? Number(values.height) : null,
-        weight: values.weight ? Number(values.weight) : null,
-        emergencyContactName: values.emergencyContactName,
-        emergencyContactPhone: values.emergencyContactPhone,
-        chronicDiseases: values.chronicDiseases,
-        allergies: values.allergies,
-        medicalHistory: values.medicalHistory,
-      });
+      
+      const updated = await updateCitizenProfile(
+        profile.userId || profile.id,
+        {
+          gender: values.gender || null,
+          dateOfBirth: values.dateOfBirth || null,
+          bloodGroup: values.bloodGroup || null,
+          address: values.address,
+          district: values.district,
+          state: values.state,
+          pincode: values.pincode,
+          height: values.height ? Number(values.height) : null,
+          weight: values.weight ? Number(values.weight) : null,
+          emergencyContactName: values.emergencyContactName,
+          emergencyContactPhone: values.emergencyContactPhone,
+          allergies: values.allergies || null,
+          chronicDiseases: values.chronicDiseases || null,
+          medicalHistory: values.medicalHistory || null,
+        }
+      );
+    
       onSaved(updated);
       toast.success('Profile updated.');
     } catch (err) {
@@ -133,12 +126,26 @@ function ProfileDetailsSection({ profile, onSaved }) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
+        <FormField label="Gender" htmlFor="gender">
+          <select id="gender" className="input-field" {...register('gender')}>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </FormField>
+
+        <FormField label="Date of Birth" htmlFor="dateOfBirth">
+          <input id="dateOfBirth" type="date" className="input-field" {...register('dateOfBirth')} />
+        </FormField>
+
         <FormField label="Blood Group" htmlFor="bloodGroup">
           <div className="relative">
             <Droplet className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <select id="bloodGroup" className="input-field pl-10" {...register('bloodGroup')}>
-              {BLOOD_GROUPS.map((bg) => (
-                <option key={bg.value} value={bg.value}>{bg.label}</option>
+              <option value="">Prefer not to say</option>
+              {BLOOD_GROUP_OPTIONS.map((bg) => (
+                <option key={bg} value={bg}>{bg}</option>
               ))}
             </select>
           </div>
@@ -197,6 +204,26 @@ function ProfileDetailsSection({ profile, onSaved }) {
           </div>
         </FormField>
 
+        <FormField label="Pregnancy Status" htmlFor="pregnancyStatus">
+          <select id="pregnancyStatus" className="input-field" {...register('pregnancyStatus')}>
+            <option value="Not Applicable">Not Applicable</option>
+            <option value="Not Pregnant">Not Pregnant</option>
+            <option value="Pregnant - 1st Trimester">Pregnant - 1st Trimester</option>
+            <option value="Pregnant - 2nd Trimester">Pregnant - 2nd Trimester</option>
+            <option value="Pregnant - 3rd Trimester">Pregnant - 3rd Trimester</option>
+          </select>
+        </FormField>
+
+        <FormField label="Disability Status" htmlFor="disabilityStatus">
+          <select id="disabilityStatus" className="input-field" {...register('disabilityStatus')}>
+            <option value="None">None</option>
+            <option value="Physical Disability">Physical Disability</option>
+            <option value="Visual Impairment">Visual Impairment</option>
+            <option value="Hearing Impairment">Hearing Impairment</option>
+            <option value="Multiple Disabilities">Multiple Disabilities</option>
+          </select>
+        </FormField>
+
         <FormField label="Chronic Diseases" htmlFor="chronicDiseases" className="sm:col-span-2">
           <textarea id="chronicDiseases" rows={2} className="input-field resize-none pt-3" {...register('chronicDiseases')} />
         </FormField>
@@ -212,7 +239,7 @@ function ProfileDetailsSection({ profile, onSaved }) {
 
       <div className="flex justify-end">
         <Button type="submit" variant="primary" isLoading={isSaving}>
-          {!isSaving && (<><Save className="h-4 w-4" /> Save changes</>)}
+          {!isSaving && (<><Save className="h-4 w-4" /> Update Profile</>)}
           {isSaving && 'Saving…'}
         </Button>
       </div>
@@ -259,7 +286,8 @@ function FamilyMemberForm({ initialValues, onCancel, onSubmit, isSaving }) {
         </FormField>
         <FormField label="Blood Group" htmlFor="fm-bloodGroup">
           <select id="fm-bloodGroup" className="input-field" {...register('bloodGroup')}>
-            {BLOOD_GROUPS.map((bg) => <option key={bg.value} value={bg.value}>{bg.label}</option>)}
+            <option value="">Prefer not to say</option>
+            {BLOOD_GROUP_OPTIONS.map((bg) => <option key={bg} value={bg}>{bg}</option>)}
           </select>
         </FormField>
         <FormField label="Phone" htmlFor="fm-phone" error={errors.phone?.message}>
@@ -388,7 +416,7 @@ function FamilyMembersSection() {
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-                {m.bloodGroup && <span>{BLOOD_GROUP_LABEL[m.bloodGroup] || titleCase(m.bloodGroup)}</span>}
+                {m.bloodGroup && <span>{toDisplayBloodGroup(m.bloodGroup)}</span>}
                 {m.phone && <span>{m.phone}</span>}
               </div>
               {m.medicalConditions && (
@@ -633,12 +661,28 @@ function HealthRecordsSection() {
 export default function MyProfile() {
   const { t } = useLanguage();
   const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    fetchCitizenProfile().then((data) => {
-      if (mounted) setProfile(data);
-    });
+    const user = getJSON(STORAGE_KEYS.USER);
+    if (user?.id) {
+      fetchCitizenProfile(user.id)
+        .then((data) => {
+          if (mounted) {
+            setProfile(data);
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (mounted) {
+            setProfile(null);
+            setLoading(false);
+          }
+        });
+    } else {
+      setLoading(false);
+    }
     return () => {
       mounted = false;
     };
@@ -656,9 +700,33 @@ export default function MyProfile() {
         {t('Manage your medical history, emergency contact, family members, and health records.')}
       </p>
 
-      {!profile && <SkeletonGrid count={2} className="mt-6 grid gap-4" />}
+      {loading && <SkeletonGrid count={2} className="mt-6 grid gap-4" />}
 
-      {profile && (
+      {!loading && !profile && (
+        <div className="surface-card mt-6 p-8 text-center space-y-6 border border-slate-200/80 dark:border-white/10 shadow-xl rounded-3xl">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-500/15 text-brand-600 dark:text-brand-400 ring-8 ring-brand-500/10">
+            <ClipboardList className="h-10 w-10" />
+          </div>
+          <div className="space-y-2 max-w-lg mx-auto">
+            <h2 className="font-display text-xl font-bold text-slate-900 dark:text-white">
+              {t('Profile Not Completed')}
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              {t('You have not completed your medical profile yet. Please complete your profile details to unlock all features.')}
+            </p>
+          </div>
+          <div className="pt-2">
+            <Link
+              to="/complete-profile"
+              className="btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm font-bold shadow-lg shadow-brand-500/20"
+            >
+              <span>{t('Complete Profile')}</span>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {!loading && profile && (
         <>
           <div className="surface-card mt-6 flex items-center gap-4 p-6">
             <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-xl font-semibold text-white">

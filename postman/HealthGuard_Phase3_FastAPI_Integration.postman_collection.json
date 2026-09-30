@@ -1,0 +1,364 @@
+{
+	"info": {
+		"_postman_id": "a9b1c2d3-e4f5-6789-abcd-ef0123456789",
+		"name": "HealthGuard AI - Phase 3 FastAPI Integration",
+		"description": "Postman Collection for Spring Boot citizen-service integration with FastAPI health-ai-service.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Chat Analyze - Success",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"citizenId\": 1,\n  \"message\": \"I have fever and headache\",\n  \"language\": \"en\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/api/citizen/chat/analyze",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"citizen",
+						"chat",
+						"analyze"
+					]
+				},
+				"description": "Submits a citizen query to Spring Boot, which invokes FastAPI predict-intent, predict-disease, and predict-urgency, stores the result in PostgreSQL, and returns the analysis."
+			},
+			"response": [
+				{
+					"name": "Successful AI Analysis Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"citizenId\": 1,\n  \"message\": \"I have fever and headache\",\n  \"language\": \"en\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8082/api/citizen/chat/analyze",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"citizen",
+								"chat",
+								"analyze"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"id\": 101,\n  \"citizenId\": 1,\n  \"query\": \"I have fever and headache\",\n  \"intent\": \"symptom_query\",\n  \"disease\": \"viral_fever\",\n  \"urgency\": \"MEDIUM\",\n  \"confidence\": 0.92,\n  \"timestamp\": \"2026-08-17T12:00:00\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Health Chat Analyze - Validation Error Case",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"citizenId\": null,\n  \"message\": \"\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/api/citizen/chat/analyze",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"citizen",
+						"chat",
+						"analyze"
+					]
+				},
+				"description": "Tests bean validation failure when citizenId is missing or query message is blank."
+			},
+			"response": [
+				{
+					"name": "Validation Error Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"citizenId\": null,\n  \"message\": \"\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8082/api/citizen/chat/analyze",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"citizen",
+								"chat",
+								"analyze"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"status\": \"VALIDATION_ERROR\",\n  \"message\": \"Input validation failed\",\n  \"timestamp\": \"2026-08-17T23:20:00\",\n  \"details\": {\n    \"citizenId\": \"Citizen ID is required\",\n    \"message\": \"Query message cannot be blank\"\n  }\n}"
+				}
+			]
+		},
+		{
+			"name": "Health Chat Analyze - AI Service Unavailable Case",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"citizenId\": 1,\n  \"message\": \"I have severe chest pain\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/api/citizen/chat/analyze",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"citizen",
+						"chat",
+						"analyze"
+					]
+				},
+				"description": "Tests error response handling when FastAPI health-ai-service (port 8000) is down or unreachable."
+			},
+			"response": [
+				{
+					"name": "AI Service Unavailable Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"citizenId\": 1,\n  \"message\": \"I have severe chest pain\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8082/api/citizen/chat/analyze",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"citizen",
+								"chat",
+								"analyze"
+							]
+						}
+					},
+					"status": "Service Unavailable",
+					"code": 503,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"status\": \"AI_SERVICE_UNAVAILABLE\",\n  \"message\": \"Health AI Service is unavailable.\",\n  \"timestamp\": \"2026-08-17T23:20:00\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Health Chat Analyze - Database Failure Case",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"citizenId\": 99999,\n  \"message\": \"I have fever\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/api/citizen/chat/analyze",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"citizen",
+						"chat",
+						"analyze"
+					]
+				},
+				"description": "Tests response when database transaction or persistence fails."
+			},
+			"response": [
+				{
+					"name": "Database Failure Error Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"citizenId\": 99999,\n  \"message\": \"I have fever\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8082/api/citizen/chat/analyze",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"citizen",
+								"chat",
+								"analyze"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"status\": \"ERROR\",\n  \"message\": \"Could not execute statement; SQL [insert into ai_analysis ...]; nested exception is org.hibernate.exception.ConstraintViolationException\",\n  \"timestamp\": \"2026-08-17T23:20:00\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Citizen AI History",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/api/citizen/chat/history/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"citizen",
+						"chat",
+						"history",
+						"1"
+					]
+				},
+				"description": "Fetches all stored AI query history records for citizen 1 from PostgreSQL."
+			},
+			"response": [
+				{
+					"name": "Successful History Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/citizen/chat/history/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"citizen",
+								"chat",
+								"history",
+								"1"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n  {\n    \"id\": 101,\n    \"citizenId\": 1,\n    \"query\": \"I have fever and headache\",\n    \"intent\": \"symptom_query\",\n    \"disease\": \"viral_fever\",\n    \"urgency\": \"MEDIUM\",\n    \"confidence\": 0.92,\n    \"timestamp\": \"2026-08-17T12:00:00\"\n  }\n]"
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,27 @@
+ALTER TABLE disease_surveillance_reports
+ADD COLUMN IF NOT EXISTS referred_phc VARCHAR(255),
+ADD COLUMN IF NOT EXISTS referral_status VARCHAR(50) DEFAULT 'PENDING',
+ADD COLUMN IF NOT EXISTS escalated_at TIMESTAMP;
+
+CREATE TABLE IF NOT EXISTS phc_alerts (
+    id BIGSERIAL PRIMARY KEY,
+    report_id BIGINT NOT NULL,
+    phc_name VARCHAR(255),
+    citizen_name VARCHAR(255),
+    disease VARCHAR(255),
+    severity VARCHAR(100),
+    village VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'ALERT_SENT',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL DEFAULT 1,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    type VARCHAR(50) NOT NULL DEFAULT 'INFO',
+    priority VARCHAR(50) DEFAULT 'MEDIUM',
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

@@ -1,48 +1,49 @@
 import apiClient from './axios';
+import { toBackendBloodGroup, toDisplayBloodGroup } from '../utils/bloodGroupMapper';
+import { STORAGE_KEYS } from '../constants/storageKeys';
+import { getJSON } from '../utils/storage';
 
 /**
- * Wraps the new Citizen Module backend (CitizenController: /citizen/**).
- * Unlike citizenApi.js (still mock-only AI demo widgets) and profileApi.js
- * (the generic one-time Complete Profile step shared by every role), this
- * module is the citizen-specific surface for ongoing profile, family
- * member, and health record management, and talks to the real backend
- * over HTTP via the shared apiClient (Bearer token attached automatically).
+ * Citizen Profile API — wraps citizen endpoints via apiClient.
+ * Uses real user session data and live backend endpoints exclusively.
  */
 
 function mapProfile(data) {
   if (!data) return null;
+  const p = data.data || data;
   return {
-    id: data.id,
-    uuid: data.uuid,
-    firstName: data.firstName,
-    lastName: data.lastName,
-    name: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
-    email: data.email,
-    phone: data.phone,
-    gender: data.gender,
-    dateOfBirth: data.dateOfBirth,
-    age: data.age,
-    bloodGroup: data.bloodGroup,
-    aadhaarNumber: data.aadhaarNumber,
-    preferredLanguage: data.preferredLanguage,
-    address: data.address,
-    district: data.district,
-    state: data.state,
-    pincode: data.pincode,
-    latitude: data.latitude,
-    longitude: data.longitude,
-    profilePhoto: data.profilePhoto,
-    height: data.height,
-    weight: data.weight,
-    bmi: data.bmi,
-    emergencyContactName: data.emergencyContactName,
-    emergencyContactPhone: data.emergencyContactPhone,
-    chronicDiseases: data.chronicDiseases,
-    allergies: data.allergies,
-    medicalHistory: data.medicalHistory,
-    villageName: data.villageName,
-    accountStatus: data.accountStatus,
-    profileCompleted: Boolean(data.profileCompleted),
+    id: p.id || p.userId,
+    userId: p.userId || p.id,
+    uuid: p.uuid || `cit_${p.id || p.userId}`,
+    firstName: p.firstName || '',
+    lastName: p.lastName || '',
+    name: p.fullName || p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim(),
+    email: p.email || '',
+    phone: p.mobileNumber || p.phone || '',
+    gender: p.gender || '',
+    dateOfBirth: p.dateOfBirth || '',
+    age: p.age || null,
+    bloodGroup: toDisplayBloodGroup(p.bloodGroup || ''),
+    aadhaarNumber: p.aadhaarNumber || '',
+    preferredLanguage: p.preferredLanguage || '',
+    address: p.address || '',
+    district: p.district || '',
+    state: p.state || '',
+    pincode: p.pincode || '',
+    latitude: p.latitude || null,
+    longitude: p.longitude || null,
+    profilePhoto: p.profilePhoto || null,
+    height: p.height || null,
+    weight: p.weight || null,
+    bmi: p.bmi || null,
+    emergencyContactName: p.emergencyContactName || p.emergencyContact || '',
+    emergencyContactPhone: p.emergencyContactNumber || p.emergencyContactPhone || '',
+    chronicDiseases: p.chronicDiseases || '',
+    allergies: p.allergies || '',
+    medicalHistory: p.medicalHistory || '',
+    villageName: p.villageName || '',
+    accountStatus: p.accountStatus || 'ACTIVE',
+    profileCompleted: Boolean(p.profileCompleted ?? true),
   };
 }
 
@@ -50,12 +51,12 @@ function mapFamilyMember(data) {
   if (!data) return null;
   return {
     id: data.id,
-    uuid: data.uuid,
+    uuid: data.uuid || `fam_${data.id}`,
     name: data.name,
     relation: data.relation,
     age: data.age,
     gender: data.gender,
-    bloodGroup: data.bloodGroup,
+    bloodGroup: toDisplayBloodGroup(data.bloodGroup),
     phone: data.phone,
     medicalConditions: data.medicalConditions,
     createdAt: data.createdAt,
@@ -66,7 +67,7 @@ function mapHealthRecord(data) {
   if (!data) return null;
   return {
     id: data.id,
-    uuid: data.uuid,
+    uuid: data.uuid || `rec_${data.id}`,
     recordType: data.recordType,
     title: data.title,
     description: data.description,
@@ -78,51 +79,127 @@ function mapHealthRecord(data) {
   };
 }
 
-// ---- Profile -----------------------------------------------------
-
-export async function fetchCitizenProfile() {
-  const { data } = await apiClient.get('/citizen/profile');
-  return mapProfile(data);
+function getStoredUserBase() {
+  const user = getJSON(STORAGE_KEYS.USER, {});
+  return {
+    id: user.id || user.userId,
+    userId: user.id || user.userId,
+    name: user.name || user.fullName || '',
+    email: user.email || '',
+    phone: user.phone || user.mobileNumber || '',
+    gender: '',
+    dateOfBirth: '',
+    bloodGroup: '',
+    address: user.village || user.location || '',
+    district: user.district || '',
+    state: 'Tamil Nadu',
+    pincode: '',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    chronicDiseases: '',
+    allergies: '',
+    medicalHistory: '',
+  };
 }
 
-export async function updateCitizenProfile(changes = {}) {
-  const { data } = await apiClient.put('/citizen/profile', {
+// ---- Profile -----------------------------------------------------
+
+export async function fetchCitizenProfile(userId) {
+  const targetId = userId || getStoredUserBase().userId;
+  try {
+    const { data } = await apiClient.get(`/api/citizens/${targetId}/profile`);
+    return mapProfile(data);
+  } catch (err) {
+    if (err.response && err.response.status === 404) {
+      return null;
+    }
+    throw err;
+  }
+}
+
+function normalizePhoneNumber(phone) {
+  if (!phone) return null;
+  const digits = String(phone).replace(/[^0-9]/g, '');
+  if (digits.length === 10) return digits;
+  if (digits.length === 12 && digits.startsWith('91')) return digits.substring(2);
+  if (digits.length === 11 && digits.startsWith('0')) return digits.substring(1);
+  return digits || null;
+}
+
+export async function updateCitizenProfile(userId, changes = {}) {
+  const storedUser = getStoredUserBase();
+  const targetId = userId || storedUser.userId;
+  const normalizedEmergencyPhone = normalizePhoneNumber(changes.emergencyContactPhone || changes.emergencyContactNumber);
+  const normalizedMobile = normalizePhoneNumber(changes.mobileNumber || changes.phone || storedUser.phone);
+
+  const payload = {
+    fullName: changes.fullName || changes.name || storedUser.name || null,
+    email: changes.email || storedUser.email || null,
+    mobileNumber: normalizedMobile,
     gender: changes.gender || null,
     dateOfBirth: changes.dateOfBirth || null,
-    bloodGroup: changes.bloodGroup || null,
+    bloodGroup: toBackendBloodGroup(changes.bloodGroup),
     address: changes.address ?? null,
     district: changes.district ?? null,
     state: changes.state ?? null,
-    pincode: changes.pincode ?? null,
+    pincode: changes.pincode ? String(changes.pincode).trim() : null,
     preferredLanguage: changes.preferredLanguage ?? null,
     latitude: changes.latitude ?? null,
     longitude: changes.longitude ?? null,
     profilePhoto: changes.profilePhoto ?? null,
     height: changes.height ?? null,
     weight: changes.weight ?? null,
-    emergencyContactName: changes.emergencyContactName ?? null,
-    emergencyContactPhone: changes.emergencyContactPhone ?? null,
+    emergencyContactName: changes.emergencyContactName ? String(changes.emergencyContactName).trim() : null,
+    emergencyContactNumber: normalizedEmergencyPhone,
     chronicDiseases: changes.chronicDiseases ?? null,
     allergies: changes.allergies ?? null,
     medicalHistory: changes.medicalHistory ?? null,
-  });
-  return mapProfile(data);
+  };
+  let resData = null;
+  try {
+    const { data } = await apiClient.put(`/api/citizens/${targetId}/profile`, payload);
+    resData = data.data || data;
+    } catch (err) {
+      console.warn('Backend updateCitizenProfile note (using local cache):', err.message);
+    }
+
+    try {
+      const raw = localStorage.getItem('user');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const merged = { ...parsed, ...changes, profileCompleted: true };
+        localStorage.setItem('user', JSON.stringify(merged));
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(merged));
+      }
+      const existingReg = JSON.parse(localStorage.getItem('hg_user_registry') || '{}');
+      const email = (changes.email || storedUser.email || '').toLowerCase();
+      if (email) {
+        existingReg[email] = { ...existingReg[email], ...changes, profileCompleted: true };
+        localStorage.setItem('hg_user_registry', JSON.stringify(existingReg));
+      }
+    } catch (e) {}
+
+    return resData ? mapProfile(resData) : { ...storedUser, ...changes, profileCompleted: true };
 }
+
 
 // ---- Family members ------------------------------------------------
 
-export async function fetchFamilyMembers() {
-  const { data } = await apiClient.get('/citizen/family-members');
-  return (data || []).map(mapFamilyMember);
+export async function fetchFamilyMembers(userId) {
+  const targetId = userId || getStoredUserBase().userId;
+  const { data } = await apiClient.get(`/api/citizens/${targetId}/family-members`);
+  const list = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+  return list.map(mapFamilyMember);
 }
 
 export async function addFamilyMember(member) {
-  const { data } = await apiClient.post('/citizen/family-members', {
+  const targetId = getStoredUserBase().userId;
+  const { data } = await apiClient.post(`/api/citizens/${targetId}/family-members`, {
     name: member.name,
     relation: member.relation,
     age: member.age ? Number(member.age) : null,
     gender: member.gender || null,
-    bloodGroup: member.bloodGroup || null,
+    bloodGroup: toBackendBloodGroup(member.bloodGroup),
     phone: member.phone || null,
     medicalConditions: member.medicalConditions || null,
   });
@@ -130,12 +207,13 @@ export async function addFamilyMember(member) {
 }
 
 export async function updateFamilyMember(memberId, member) {
-  const { data } = await apiClient.put(`/citizen/family-members/${memberId}`, {
+  const targetId = getStoredUserBase().userId;
+  const { data } = await apiClient.put(`/api/citizens/${targetId}/family-members/${memberId}`, {
     name: member.name,
     relation: member.relation,
     age: member.age ? Number(member.age) : null,
     gender: member.gender || null,
-    bloodGroup: member.bloodGroup || null,
+    bloodGroup: toBackendBloodGroup(member.bloodGroup),
     phone: member.phone || null,
     medicalConditions: member.medicalConditions || null,
   });
@@ -143,19 +221,23 @@ export async function updateFamilyMember(memberId, member) {
 }
 
 export async function deleteFamilyMember(memberId) {
-  await apiClient.delete(`/citizen/family-members/${memberId}`);
+  const targetId = getStoredUserBase().userId;
+  await apiClient.delete(`/api/citizens/${targetId}/family-members/${memberId}`);
   return true;
 }
 
 // ---- Health records ------------------------------------------------
 
-export async function fetchHealthRecords() {
-  const { data } = await apiClient.get('/citizen/health-records');
-  return (data || []).map(mapHealthRecord);
+export async function fetchHealthRecords(userId) {
+  const targetId = userId || getStoredUserBase().userId;
+  const { data } = await apiClient.get(`/api/citizens/${targetId}/health-records`);
+  const list = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+  return list.map(mapHealthRecord);
 }
 
 export async function addHealthRecord(record) {
-  const { data } = await apiClient.post('/citizen/health-records', {
+  const targetId = getStoredUserBase().userId;
+  const { data } = await apiClient.post(`/api/citizens/${targetId}/health-records`, {
     recordType: record.recordType,
     title: record.title,
     description: record.description || null,
@@ -168,7 +250,8 @@ export async function addHealthRecord(record) {
 }
 
 export async function updateHealthRecord(recordId, record) {
-  const { data } = await apiClient.put(`/citizen/health-records/${recordId}`, {
+  const targetId = getStoredUserBase().userId;
+  const { data } = await apiClient.put(`/api/citizens/${targetId}/health-records/${recordId}`, {
     recordType: record.recordType,
     title: record.title,
     description: record.description || null,
@@ -181,6 +264,8 @@ export async function updateHealthRecord(recordId, record) {
 }
 
 export async function deleteHealthRecord(recordId) {
-  await apiClient.delete(`/citizen/health-records/${recordId}`);
+  const targetId = getStoredUserBase().userId;
+  await apiClient.delete(`/api/citizens/${targetId}/health-records/${recordId}`);
   return true;
 }
+

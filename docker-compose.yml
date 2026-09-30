@@ -1,0 +1,141 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: healthguard-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-healthguard}
+      POSTGRES_USER: ${POSTGRES_USER:-healthguard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-healthguard_secure_password}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U healthguard -d healthguard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: healthguard-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  gateway-service:
+    build:
+      context: ./backend/gateway-service
+    container_name: healthguard-gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - JWT_SECRET=${JWT_SECRET:-HealthGuardAIUltraSecureJWTSecretKeyMustBeAtLeast256BitsLongForHS512Algorithm!}
+    depends_on:
+      - postgres
+
+  auth-service:
+    build:
+      context: ./backend/auth-service
+    container_name: healthguard-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-healthguard}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-healthguard}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-healthguard_secure_password}
+      - JWT_SECRET=${JWT_SECRET:-HealthGuardAIUltraSecureJWTSecretKeyMustBeAtLeast256BitsLongForHS512Algorithm!}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  citizen-service:
+    build:
+      context: ./backend/citizen-service
+    container_name: healthguard-citizen-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-healthguard}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-healthguard}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-healthguard_secure_password}
+      - JWT_SECRET=${JWT_SECRET:-HealthGuardAIUltraSecureJWTSecretKeyMustBeAtLeast256BitsLongForHS512Algorithm!}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  community-service:
+    build:
+      context: ./backend/community-service
+    container_name: healthguard-community-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-healthguard}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-healthguard}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-healthguard_secure_password}
+      - JWT_SECRET=${JWT_SECRET:-HealthGuardAIUltraSecureJWTSecretKeyMustBeAtLeast256BitsLongForHS512Algorithm!}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ai-service:
+    build:
+      context: ./backend/ai-service
+    container_name: healthguard-ai-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-healthguard}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-healthguard}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-healthguard_secure_password}
+      - OLLAMA_URL=http://ollama:11434
+      - JWT_SECRET=${JWT_SECRET:-HealthGuardAIUltraSecureJWTSecretKeyMustBeAtLeast256BitsLongForHS512Algorithm!}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+
+  admin-service:
+    build:
+      context: ./backend/admin-service
+    container_name: healthguard-admin-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-healthguard}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-healthguard}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-healthguard_secure_password}
+      - JWT_SECRET=${JWT_SECRET:-HealthGuardAIUltraSecureJWTSecretKeyMustBeAtLeast256BitsLongForHS512Algorithm!}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  health-ai-service:
+    build:
+      context: ./health-ai-service
+    container_name: healthguard-health-ai-service
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - ENVIRONMENT=production
+
+  frontend:
+    build:
+      context: ./Frontend
+    container_name: healthguard-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway-service
+
+volumes:
+  postgres_data:
+  ollama_data:

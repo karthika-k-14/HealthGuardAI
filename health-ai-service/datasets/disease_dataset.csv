@@ -1,0 +1,26 @@
+symptoms,diseaseCategory
+"high fever severe headache pain behind eyes joint body pain rash",DENGUE
+"fever with chills sweating headache muscle pain nausea",MALARIA
+"persistent cough for 3 weeks chest pain coughing blood night sweats weight loss",TUBERCULOSIS
+"frequent urination extreme thirst fatigue blurred vision slow healing sores",DIABETES
+"high blood pressure dizziness headache chest tightness shortness of breath",HYPERTENSION
+"shortness of breath wheezing persistent cough fever sputum production difficulty breathing",RESPIRATORY_DISEASE
+"chest pain pressure spreading to arm shortness of breath cold sweat dizziness",HEART_DISEASE
+"skin rash itching red spots peeling skin blisters inflammation",SKIN_DISEASE
+"pregnancy nausea swelling legs low hemoglobin fatigue abdominal discomfort morning sickness",MATERNAL_HEALTH
+"infant fever diarrhea vomiting refusal to feed low weight childhood lethargy",CHILD_HEALTH
+"mild fatigue body weakness headache low grade fever runny nose loss of appetite",GENERAL_ILLNESS
+"sudden fever eye socket pain low platelet count petechiae rash",DENGUE
+"high fever shivering periodicity cold stage hot stage sweating stage",MALARIA
+"chronic cough hemoptysis low grade fever evening rise of temperature anorexia",TUBERCULOSIS
+"polydipsia polyuria polyphagia unexplained weight loss elevated blood glucose",DIABETES
+"systolic elevation diastolic pressure throbbing occipital headache blurred vision",HYPERTENSION
+"asthma attack breathlessness chest tightness wheezing cough rhonchi",RESPIRATORY_DISEASE
+"angina pectoris chest pain radiating to left shoulder dyspnea diaphoresis",HEART_DISEASE
+"eczema dermatitis pruritus red scaly patches skin lesions",SKIN_DISEASE
+"antenatal checkup preeclampsia high bp pregnancy fetal movement anemia",MATERNAL_HEALTH
+"pediatric diarrhea dehydration pediatric fever vaccination reaction malnutrition",CHILD_HEALTH
+"common cold mild headache sore throat tiredness malaise",GENERAL_ILLNESS
+"jaundice yellow eyes yellow skin dark urine pale stool nausea fatigue",JAUNDICE
+"acute viral hepatitis jaundice elevated bilirubin sclera icterus right upper quadrant fullness",JAUNDICE
+"deep yellowing eyes tea colored urine severe fatigue loss of appetite abdominal pain",JAUNDICE

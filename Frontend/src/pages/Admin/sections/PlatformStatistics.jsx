@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, UserCheck, Hospital, Megaphone, Bot, Activity } from 'lucide-react';
+import { Users, UserCheck, Megaphone, Bot, Activity } from 'lucide-react';
 import { fetchPlatformStatistics } from '../../../api/adminApi';
 import { SkeletonGrid } from '../../../components/common/Skeleton';
 
 const ITEMS = [
   { key: 'totalUsers', label: 'Total Users', icon: Users, tone: 'text-brand-600 dark:text-brand-400 bg-brand-500/10' },
   { key: 'activeUsers', label: 'Active Users', icon: UserCheck, tone: 'text-sky-600 dark:text-sky-400 bg-sky-500/10' },
-  { key: 'totalHospitals', label: 'Hospitals', icon: Hospital, tone: 'text-purple-600 dark:text-purple-300 bg-purple-500/10' },
   { key: 'totalCampaigns', label: 'Active Campaigns', icon: Megaphone, tone: 'text-amber-600 dark:text-amber-300 bg-signal-amber/10' },
   { key: 'aiInteractions', label: 'AI Interactions', icon: Bot, tone: 'text-indigo-600 dark:text-indigo-300 bg-indigo-500/10' },
   { key: 'systemUptimePercent', label: 'System Uptime', icon: Activity, tone: 'text-emerald-600 dark:text-emerald-300 bg-emerald-500/10', suffix: '%' },

@@ -21,6 +21,11 @@ export default function EmergencyCenter() {
     };
   }, []);
 
+  const outbreakAlerts = Array.isArray(data?.outbreakAlerts) ? data.outbreakAlerts : [];
+  const ambulanceRequests = Array.isArray(data?.ambulanceRequests) ? data.ambulanceRequests : [];
+  const medicineShortages = Array.isArray(data?.medicineShortages) ? data.medicineShortages : [];
+  const disasterAlerts = Array.isArray(data?.disasterAlerts) ? data.disasterAlerts : [];
+
   return (
     <div className="space-y-6">
       <div>
@@ -42,14 +47,14 @@ export default function EmergencyCenter() {
               <p className="text-sm font-semibold text-slate-900 dark:text-white">Disease Outbreak Alerts</p>
             </div>
             <div className="mt-4 space-y-2.5">
-              {data.outbreakAlerts.length === 0 && <p className="text-sm text-slate-400">No active outbreaks.</p>}
-              {data.outbreakAlerts.map((a) => (
+              {outbreakAlerts.length === 0 && <p className="text-sm text-slate-400">No active outbreaks.</p>}
+              {outbreakAlerts.map((a) => (
                 <div key={a.id} className="flex items-center justify-between rounded-xl border border-slate-200/70 px-3 py-2 text-sm dark:border-white/10">
                   <div>
                     <p className="text-slate-700 dark:text-slate-200">{a.disease} — {a.area}</p>
                     <p className="text-xs text-slate-400">{a.reportedCases} reported cases</p>
                   </div>
-                  <Badge tone={SEVERITY_TONE[a.severity]}>{a.severity}</Badge>
+                  <Badge tone={SEVERITY_TONE[a.severity] || 'rose'}>{a.severity}</Badge>
                 </div>
               ))}
             </div>
@@ -63,11 +68,12 @@ export default function EmergencyCenter() {
               <p className="text-sm font-semibold text-slate-900 dark:text-white">Ambulance Requests</p>
             </div>
             <div className="mt-4 space-y-2.5">
-              {data.ambulanceRequests.map((a) => (
+              {ambulanceRequests.length === 0 && <p className="text-sm text-slate-400">No pending ambulance requests.</p>}
+              {ambulanceRequests.map((a) => (
                 <div key={a.id} className="flex items-center justify-between rounded-xl border border-slate-200/70 px-3 py-2 text-sm dark:border-white/10">
                   <div>
                     <p className="text-slate-700 dark:text-slate-200">{a.location}</p>
-                    <p className="text-xs text-slate-400">{new Date(a.requestedAt).toLocaleString()}</p>
+                    <p className="text-xs text-slate-400">{a.requestedAt ? new Date(a.requestedAt).toLocaleString() : 'Just now'}</p>
                   </div>
                   <Badge tone={STATUS_TONE[a.status] || 'neutral'}>{a.status}</Badge>
                 </div>
@@ -83,13 +89,14 @@ export default function EmergencyCenter() {
               <p className="text-sm font-semibold text-slate-900 dark:text-white">Medicine Shortages</p>
             </div>
             <div className="mt-4 space-y-2.5">
-              {data.medicineShortages.map((s) => (
+              {medicineShortages.length === 0 && <p className="text-sm text-slate-400">No medicine shortages reported.</p>}
+              {medicineShortages.map((s) => (
                 <div key={s.id} className="flex items-center justify-between rounded-xl border border-slate-200/70 px-3 py-2 text-sm dark:border-white/10">
                   <div>
                     <p className="text-slate-700 dark:text-slate-200">{s.medicine}</p>
                     <p className="text-xs text-slate-400">{s.facility}</p>
                   </div>
-                  <Badge tone={SEVERITY_TONE[s.severity]}>{s.severity}</Badge>
+                  <Badge tone={SEVERITY_TONE[s.severity] || 'amber'}>{s.severity}</Badge>
                 </div>
               ))}
             </div>
@@ -103,11 +110,11 @@ export default function EmergencyCenter() {
               <p className="text-sm font-semibold text-slate-900 dark:text-white">Disaster Alerts</p>
             </div>
             <div className="mt-4 space-y-2.5">
-              {data.disasterAlerts.length === 0 && <p className="text-sm text-slate-400">No active disaster alerts.</p>}
-              {data.disasterAlerts.map((d) => (
+              {disasterAlerts.length === 0 && <p className="text-sm text-slate-400">No active disaster alerts.</p>}
+              {disasterAlerts.map((d) => (
                 <div key={d.id} className="rounded-xl border border-slate-200/70 px-3 py-2 text-sm dark:border-white/10">
                   <p className="text-slate-700 dark:text-slate-200">{d.type} — {d.area}</p>
-                  <p className="text-xs text-slate-400">Issued {new Date(d.issuedOn).toLocaleDateString()} · {d.status}</p>
+                  <p className="text-xs text-slate-400">Issued {d.issuedOn ? new Date(d.issuedOn).toLocaleDateString() : 'Recently'} · {d.status}</p>
                 </div>
               ))}
             </div>

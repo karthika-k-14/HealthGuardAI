@@ -25,7 +25,7 @@ export default function Unauthorized() {
         </span>
         <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Access restricted</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Your account role doesn't have permission to view this page.
+          Your account role doesn&apos;t have permission to view this page.
         </p>
         <Link to={homeLink}>
           <Button variant="primary">{isAuthenticated ? 'Go to my dashboard' : 'Back to home'}</Button>

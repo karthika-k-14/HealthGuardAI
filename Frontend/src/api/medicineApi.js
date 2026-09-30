@@ -70,17 +70,26 @@ export async function fetchMedicines(params = {}) {
   if (options.stockStatus && options.stockStatus !== 'All') queryParams.stockStatus = options.stockStatus;
   if (options.expiry && options.expiry !== 'All') queryParams.expiry = options.expiry;
 
+  let list = [];
   try {
     const { data } = await apiClient.get('/medicines', { params: queryParams });
-    return (data || []).map(mapMedicine);
+    const res = data?.data || data;
+    if (Array.isArray(res)) {
+      list = res.map(mapMedicine);
+    }
   } catch (err) {
     try {
       const { data } = await apiClient.get('/pharmacist/medicines', { params: queryParams });
-      return (data || []).map(mapMedicine);
+      const res = data?.data || data;
+      if (Array.isArray(res)) {
+        list = res.map(mapMedicine);
+      }
     } catch (e) {
-      throw err;
+      // Return empty list if both requests fail
     }
   }
+
+  return list;
 }
 
 export async function getMedicines(params) {

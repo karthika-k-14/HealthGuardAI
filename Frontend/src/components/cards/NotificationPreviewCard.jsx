@@ -41,7 +41,7 @@ export default function NotificationPreviewCard() {
       <div className="mt-4 space-y-3">
         {isLoading && Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
         {!isLoading && preview.length === 0 && (
-          <p className="text-sm text-slate-400">You're all caught up.</p>
+          <p className="text-sm text-slate-400">You&apos;re all caught up.</p>
         )}
         {!isLoading &&
           preview.map((n) => (

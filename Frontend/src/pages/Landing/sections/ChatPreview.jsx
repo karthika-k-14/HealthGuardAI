@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Send, Mic, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
 import { fetchSuggestedQuestions } from '../../../api/landingApi';
 import { sendChatMessage } from '../../../api/chatbotApi';
 import { cn } from '../../../utils/cn';
@@ -27,7 +28,9 @@ export default function ChatPreview() {
   const [suggested, setSuggested] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const scrollRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   // Reset welcome message when language changes
   useEffect(() => {
@@ -46,9 +49,101 @@ export default function ChatPreview() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch (e) {}
+      }
+    };
+  }, []);
+
+  const toggleVoiceInput = async () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch (e) {}
+      }
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error(t('Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.'));
+      return;
+    }
+
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        testStream.getTracks().forEach((trk) => trk.stop());
+      }
+    } catch (permErr) {
+      console.warn('Microphone permission check failed:', permErr);
+      if (permErr.name === 'NotAllowedError' || permErr.name === 'PermissionDeniedError') {
+        toast.error(t('Microphone permission blocked. Please enable microphone access in your browser address bar.'));
+      } else if (permErr.name === 'NotFoundError' || permErr.name === 'DevicesNotFoundError') {
+        toast.error(t('No microphone found. Please connect a microphone.'));
+      } else {
+        toast.error(t('Could not access microphone: ' + (permErr.message || 'Unknown error')));
+      }
+      return;
+    }
+
+    try {
+      const rec = new SpeechRecognition();
+      rec.continuous = false;
+      rec.interimResults = true;
+
+      const langMap = { ta: 'ta-IN', hi: 'hi-IN', or: 'or-IN' };
+      rec.lang = langMap[i18n.language] || 'en-IN';
+
+      rec.onstart = () => {
+        setIsListening(true);
+        toast.success(t('Listening... Speak now'), { id: 'chat-preview-mic' });
+      };
+
+      rec.onresult = (e) => {
+        let transcript = '';
+        for (let i = 0; i < e.results.length; i++) {
+          transcript += e.results[i][0].transcript;
+        }
+        if (transcript) {
+          setInput(transcript);
+        }
+      };
+
+      rec.onerror = (e) => {
+        console.warn('ChatPreview mic error:', e.error);
+        if (e.error === 'no-speech') {
+          // ignore
+        } else if (e.error === 'not-allowed') {
+          toast.error(t('Microphone permission denied.'), { id: 'chat-preview-mic' });
+        } else if (e.error === 'network') {
+          toast.error(t('Speech recognition service offline or unreachable.'), { id: 'chat-preview-mic' });
+        }
+        setIsListening(false);
+      };
+
+      rec.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = rec;
+      rec.start();
+    } catch (err) {
+      console.error('Failed to start recognition:', err);
+      toast.error(t('Failed to start voice input'));
+      setIsListening(false);
+    }
+  };
+
   const send = async (text) => {
     const trimmed = text.trim();
     if (!trimmed) return;
+    if (isListening) {
+      try { recognitionRef.current?.stop(); } catch (e) {}
+      setIsListening(false);
+    }
     const userMsg = { id: `u_${Date.now()}`, role: 'user', content: trimmed };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
@@ -154,11 +249,25 @@ export default function ChatPreview() {
           >
             <button
               type="button"
-              aria-label={t('Voice input')}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"
-              onClick={() => setInput((v) => v)}
+              id="landing-chat-mic-btn"
+              aria-label={isListening ? t('Stop voice input') : t('Voice input')}
+              title={isListening ? t('Stop voice input') : t('Voice input')}
+              className={cn(
+                "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors cursor-pointer",
+                isListening
+                  ? "bg-rose-500 text-white shadow-md shadow-rose-500/30"
+                  : "text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/5 dark:hover:text-slate-200"
+              )}
+              onClick={toggleVoiceInput}
             >
-              <Mic className="h-4 w-4" />
+              {isListening && (
+                <motion.span
+                  className="absolute inset-0 rounded-full bg-rose-500"
+                  animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                />
+              )}
+              <Mic className={cn("h-4 w-4 relative z-10", isListening && "animate-pulse")} />
             </button>
             <input
               value={input}

@@ -1,0 +1,34 @@
+text,intent
+"I have high fever and severe headache",SYMPTOM_QUERY
+"My stomach aches badly and I feel nauseous",SYMPTOM_QUERY
+"Cough and difficulty in breathing for 3 days",SYMPTOM_QUERY
+"Skin rash itching all over body",SYMPTOM_QUERY
+"Joint pain and fatigue with mild fever",SYMPTOM_QUERY
+"What are the symptoms of dengue fever",DISEASE_INFORMATION
+"Tell me more about tuberculosis symptoms and cure",DISEASE_INFORMATION
+"Is diabetes hereditary and how to manage it",DISEASE_INFORMATION
+"What causes malaria parasite transmission",DISEASE_INFORMATION
+"How to prevent malaria mosquito bites",PREVENTION_ADVICE
+"What precautions should I take during monsoon outbreak",PREVENTION_ADVICE
+"How to maintain healthy blood pressure levels",PREVENTION_ADVICE
+"Tips for maternal nutrition during pregnancy",PREVENTION_ADVICE
+"What is the dosage for paracetamol 500mg",MEDICINE_INFORMATION
+"Are there side effects of amoxicillin antibiotic",MEDICINE_INFORMATION
+"What medicine to take for viral fever and cold",MEDICINE_INFORMATION
+"Is ORS safe for dehydration in children",MEDICINE_INFORMATION
+"When should polio vaccine be given to baby",VACCINATION_QUERY
+"Schedule for hepatitis B vaccination",VACCINATION_QUERY
+"Where can I get covid booster dose",VACCINATION_QUERY
+"Is tetanus injection needed after rusty nail scratch",VACCINATION_QUERY
+"Where is the nearest primary health center PHC",HOSPITAL_SEARCH
+"Find emergency hospital near me in district",HOSPITAL_SEARCH
+"Locate government hospital with ICU facilities",HOSPITAL_SEARCH
+"Contact number for district civil hospital",HOSPITAL_SEARCH
+"Chest pain spreading to left arm call ambulance",EMERGENCY_HELP
+"Patient is unconscious and not breathing",EMERGENCY_HELP
+"Severe bleeding from deep accident wound help immediately",EMERGENCY_HELP
+"Child swallowed poison emergency assistance required",EMERGENCY_HELP
+"What are daily water intake recommendations",GENERAL_HEALTH_QUERY
+"How to improve sleep quality naturally",GENERAL_HEALTH_QUERY
+"What exercises are good for back pain",GENERAL_HEALTH_QUERY
+"General wellness and health tips for elderly",GENERAL_HEALTH_QUERY

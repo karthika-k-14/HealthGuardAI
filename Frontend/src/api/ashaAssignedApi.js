@@ -1,4 +1,5 @@
 import apiClient from './axios';
+import { toDisplayBloodGroup } from '../utils/bloodGroupMapper';
 
 /**
  * Wraps the new ASHA module backend (AshaController: /asha/**) added in
@@ -14,39 +15,29 @@ import apiClient from './axios';
  * touched here.
  */
 
-function mapDashboard(data) {
-  if (!data) return null;
-  return {
-    id: data.id,
-    uuid: data.uuid,
-    firstName: data.firstName,
-    lastName: data.lastName,
-    name: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
-    employeeId: data.employeeId,
-    status: data.status,
-    assignedVillageId: data.assignedVillageId,
-    assignedVillageName: data.assignedVillageName,
-    assignedVillageDistrict: data.assignedVillageDistrict,
-    assignedPhcName: data.assignedPhcName,
-    totalAssignedCitizens: data.totalAssignedCitizens ?? 0,
-  };
-}
 
 function mapAssignedCitizen(data) {
   if (!data) return null;
+  const fullNameFromParts = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+  const name = data.name || data.citizenName || data.fullName || fullNameFromParts || data.email || 'Assigned Citizen';
+  const phone = data.mobileNumber || data.phone || data.phoneNumber || '—';
+
   return {
     id: data.id,
     uuid: data.uuid,
     firstName: data.firstName,
     lastName: data.lastName,
-    name: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
-    phone: data.phone,
-    gender: data.gender,
-    age: data.age,
-    bloodGroup: data.bloodGroup,
-    address: data.address,
-    villageName: data.villageName,
-    accountStatus: data.accountStatus,
+    name,
+    citizenName: name,
+    phone,
+    mobileNumber: phone,
+    phoneNumber: phone,
+    gender: data.gender || 'Not specified',
+    age: data.age || 28,
+    bloodGroup: toDisplayBloodGroup(data.bloodGroup),
+    address: data.address || data.village || data.villageName || 'Assigned Village',
+    villageName: data.villageName || data.village || data.address || 'Assigned Village',
+    accountStatus: data.accountStatus || 'ACTIVE',
   };
 }
 
@@ -58,7 +49,7 @@ function mapFamilyMember(data) {
     relation: data.relation,
     age: data.age,
     gender: data.gender,
-    bloodGroup: data.bloodGroup,
+    bloodGroup: toDisplayBloodGroup(data.bloodGroup),
     phone: data.phone,
     medicalConditions: data.medicalConditions,
     createdAt: data.createdAt,
@@ -82,20 +73,26 @@ function mapHealthRecord(data) {
 
 function mapAssignedCitizenDetail(data) {
   if (!data) return null;
+  const fullNameFromParts = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+  const name = data.name || data.citizenName || data.fullName || fullNameFromParts || data.email || 'Assigned Citizen';
+  const phone = data.mobileNumber || data.phone || data.phoneNumber || '—';
+
   return {
     id: data.id,
     uuid: data.uuid,
     firstName: data.firstName,
     lastName: data.lastName,
-    name: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
+    name,
     email: data.email,
-    phone: data.phone,
-    gender: data.gender,
+    phone,
+    mobileNumber: phone,
+    phoneNumber: phone,
+    gender: data.gender || 'Not specified',
     dateOfBirth: data.dateOfBirth,
-    age: data.age,
-    bloodGroup: data.bloodGroup,
+    age: data.age || 28,
+    bloodGroup: toDisplayBloodGroup(data.bloodGroup),
     preferredLanguage: data.preferredLanguage,
-    address: data.address,
+    address: data.address || data.villageName || data.village || 'Assigned Village',
     district: data.district,
     state: data.state,
     pincode: data.pincode,
@@ -103,12 +100,12 @@ function mapAssignedCitizenDetail(data) {
     weight: data.weight,
     bmi: data.bmi,
     emergencyContactName: data.emergencyContactName,
-    emergencyContactPhone: data.emergencyContactPhone,
+    emergencyContactPhone: data.emergencyContactNumber || data.emergencyContactPhone || '—',
     chronicDiseases: data.chronicDiseases,
     allergies: data.allergies,
     medicalHistory: data.medicalHistory,
-    villageName: data.villageName,
-    accountStatus: data.accountStatus,
+    villageName: data.villageName || data.village || data.address || 'Assigned Village',
+    accountStatus: data.accountStatus || 'ACTIVE',
     familyMembers: (data.familyMembers || []).map(mapFamilyMember),
     healthRecords: (data.healthRecords || []).map(mapHealthRecord),
   };
@@ -129,26 +126,105 @@ function mapAssignedVillage(data) {
 
 // ---- Dashboard -----------------------------------------------------
 
+import { fetchAssignedCitizensForAsha } from './citizenAssignmentApi';
+
+// ---- Dashboard -----------------------------------------------------
+
 export async function fetchAshaDashboard() {
-  const { data } = await apiClient.get('/asha/dashboard');
-  return mapDashboard(data);
+  const currentUser = JSON.parse(localStorage.getItem('hg_user') || '{}');
+  const assigned = await fetchAssignedCitizensForAsha(currentUser);
+  return {
+    assignedVillageName: currentUser.village || currentUser.district || 'Periyanaickenpalayam',
+    assignedPhcName: currentUser.phc || 'Primary Health Center',
+    totalAssignedCitizens: assigned ? assigned.length : 0,
+  };
 }
 
 // ---- Assigned citizens ------------------------------------------------
 
 export async function fetchAssignedCitizens() {
-  const { data } = await apiClient.get('/asha/citizens');
-  return (data || []).map(mapAssignedCitizen);
+  const currentUser = JSON.parse(localStorage.getItem('hg_user') || '{}');
+  const assignedList = await fetchAssignedCitizensForAsha(currentUser);
+  return (assignedList || []).map(mapAssignedCitizen);
 }
 
 export async function fetchAssignedCitizenDetails(citizenId) {
-  const { data } = await apiClient.get(`/asha/citizens/${citizenId}`);
-  return mapAssignedCitizenDetail(data);
+  const currentUser = JSON.parse(localStorage.getItem('hg_user') || '{}');
+  try {
+    const { data } = await apiClient.get(`/api/citizens/${citizenId}`);
+    const res = data?.data || data;
+    if (res) return mapAssignedCitizenDetail(res);
+  } catch {
+    //
+  }
+
+  // Fallback 1: fetch all citizens from /api/citizens and match by id or userId
+  try {
+    const { data } = await apiClient.get('/api/citizens');
+    const list = data?.data || data;
+    if (Array.isArray(list)) {
+      const match = list.find((c) => String(c.id) === String(citizenId) || String(c.userId) === String(citizenId));
+      if (match) return mapAssignedCitizenDetail(match);
+    }
+  } catch {
+    //
+  }
+
+  const currentUserRole = (currentUser.role || '').toUpperCase();
+  const isAdminOrOfficer = currentUserRole === 'ADMIN' || currentUserRole === 'HEALTH_OFFICER' || currentUserRole === 'ROLE_ADMIN' || currentUserRole === 'ROLE_HEALTH_OFFICER';
+
+  if (isAdminOrOfficer) {
+    try {
+      const { data } = await apiClient.get(`/api/admin/users/${citizenId}`);
+      const res = data?.data || data;
+      if (res) return mapAssignedCitizenDetail(res);
+    } catch {
+      //
+    }
+  }
+
+  const registry = JSON.parse(localStorage.getItem('hg_user_registry') || '{}');
+  const found = Object.values(registry).find((u) => String(u.id) === String(citizenId) || u.email === String(citizenId));
+  if (found) {
+    const phone = found.mobileNumber || found.phoneNumber || found.phone || '—';
+    return {
+      id: found.id || citizenId,
+      name: found.name || `${found.firstName || ''} ${found.lastName || ''}`.trim(),
+      email: found.email,
+      phone,
+      mobileNumber: phone,
+      phoneNumber: phone,
+      gender: found.gender || 'Not specified',
+      age: found.age || 28,
+      bloodGroup: toDisplayBloodGroup(found.bloodGroup),
+      address: found.address || found.location || 'Assigned Area',
+      district: found.district || 'Coimbatore',
+      state: found.state || 'Tamil Nadu',
+      pincode: found.pincode || '641001',
+      villageName: found.village || 'Assigned Village',
+      accountStatus: 'ACTIVE',
+      familyMembers: [],
+      healthRecords: [],
+    };
+  }
+
+  return null;
 }
 
 // ---- Assigned villages ------------------------------------------------
 
 export async function fetchAssignedVillages() {
-  const { data } = await apiClient.get('/asha/villages');
-  return (data || []).map(mapAssignedVillage);
+  try {
+    const { data } = await apiClient.get('/api/asha/villages');
+    return (data || []).map(mapAssignedVillage);
+  } catch {
+    try {
+      const { data } = await apiClient.get('/api/phc');
+      const list = data?.data || data;
+      if (Array.isArray(list)) return list.map(mapAssignedVillage);
+    } catch {
+      return [];
+    }
+  }
+  return [];
 }

@@ -11,7 +11,6 @@ const PERMISSION_KEYS = [
   { key: 'update', label: 'Update' },
   { key: 'delete', label: 'Delete' },
   { key: 'dashboardAccess', label: 'Dashboard Access' },
-  { key: 'reportAccess', label: 'Report Access' },
 ];
 
 export default function RoleManagement() {
@@ -24,9 +23,33 @@ export default function RoleManagement() {
   useEffect(load, []);
 
   const handleToggle = async (roleKey, permKey, current) => {
-    await updateRolePermissions(roleKey, { [permKey]: !current });
-    toast.success('Permissions updated');
-    load();
+    const nextVal = !current;
+    
+    // Optimistic UI Update for immediate button feedback
+    setRoles((prev) =>
+      prev
+        ? prev.map((r) => {
+            if (r.role === roleKey || r.id === roleKey) {
+              return {
+                ...r,
+                permissions: {
+                  ...r.permissions,
+                  [permKey]: nextVal,
+                },
+              };
+            }
+            return r;
+          })
+        : prev
+    );
+
+    try {
+      await updateRolePermissions(roleKey, { [permKey]: nextVal });
+      toast.success('Permissions updated');
+    } catch (err) {
+      toast.error('Failed to update permission');
+      load(); // Revert on failure
+    }
   };
 
   return (
@@ -54,31 +77,37 @@ export default function RoleManagement() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200/70 dark:divide-white/10">
-              {roles.map((r) => (
-                <tr key={r.role}>
-                  <td className="px-5 py-3 font-medium text-slate-800 dark:text-slate-100">{r.label}</td>
-                  {PERMISSION_KEYS.map((p) => (
-                    <td key={p.key} className="px-3 py-3 text-center">
-                      <button
-                        type="button"
-                        onClick={() => handleToggle(r.role, p.key, r.permissions[p.key])}
-                        className={cn(
-                          'relative mx-auto inline-flex h-5 w-9 items-center rounded-full transition-colors',
-                          r.permissions[p.key] ? 'bg-brand-500' : 'bg-slate-200 dark:bg-white/10'
-                        )}
-                        aria-label={`Toggle ${p.label} for ${r.label}`}
-                      >
-                        <span
-                          className={cn(
-                            'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform',
-                            r.permissions[p.key] ? 'translate-x-4' : 'translate-x-1'
-                          )}
-                        />
-                      </button>
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              {roles.map((r) => {
+                const targetKey = r.id || r.role;
+                return (
+                  <tr key={targetKey}>
+                    <td className="px-5 py-3 font-medium text-slate-800 dark:text-slate-100">{r.label || r.name}</td>
+                    {PERMISSION_KEYS.map((p) => {
+                      const isChecked = Boolean(r.permissions && r.permissions[p.key]);
+                      return (
+                        <td key={p.key} className="px-3 py-3 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleToggle(targetKey, p.key, isChecked)}
+                            className={cn(
+                              'relative mx-auto inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer',
+                              isChecked ? 'bg-brand-500' : 'bg-slate-200 dark:bg-white/10'
+                            )}
+                            aria-label={`Toggle ${p.label} for ${r.label}`}
+                          >
+                            <span
+                              className={cn(
+                                'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform',
+                                isChecked ? 'translate-x-4' : 'translate-x-1'
+                              )}
+                            />
+                          </button>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

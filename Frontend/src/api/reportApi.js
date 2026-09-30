@@ -1,8 +1,5 @@
 import apiClient from './axios';
 
-/**
- * Helper to strip empty/null/undefined query parameters before sending request
- */
 function cleanParams(params = {}) {
   const cleaned = {};
   Object.keys(params).forEach((key) => {
@@ -14,99 +11,110 @@ function cleanParams(params = {}) {
   return cleaned;
 }
 
-/**
- * Daily Activity & Health Summary Report
- * GET /reports/daily
- */
+function getAuthContext() {
+  try {
+    const user = JSON.parse(localStorage.getItem('hg_user') || '{}');
+    return {
+      ashaWorkerId: user.ashaWorkerId || user.id,
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    };
+  } catch {
+    return {};
+  }
+}
+
+async function fetchDynamicReport(endpoint, filters = {}) {
+  const auth = getAuthContext();
+  const params = cleanParams({
+    ...filters,
+    ashaWorkerId: auth.ashaWorkerId,
+  });
+
+  const headers = {};
+  if (auth.userId) headers['X-User-Id'] = String(auth.userId);
+  if (auth.email) headers['X-User-Email'] = auth.email;
+  if (auth.role) headers['X-User-Role'] = auth.role;
+
+  try {
+    const { data } = await apiClient.get(endpoint, {
+      params,
+      headers,
+      silent: true,
+    });
+    const res = data?.data || data;
+    if (res && typeof res === 'object') return res;
+  } catch (e) {
+    // If route has prefix mismatch, attempt alternative
+    try {
+      const altEndpoint = endpoint.startsWith('/api') ? endpoint.replace('/api', '') : `/api${endpoint}`;
+      const { data } = await apiClient.get(altEndpoint, {
+        params,
+        headers,
+        silent: true,
+      });
+      const res = data?.data || data;
+      if (res && typeof res === 'object') return res;
+    } catch (e2) {
+      // Return empty report structure if network fails; NEVER mock or fake
+      return {
+        reportType: endpoint.split('/').pop()?.toUpperCase() || 'REPORT',
+        reportTitle: 'Report',
+        reportPeriod: 'Selected Period',
+        isEmpty: true,
+        metrics: {},
+        records: [],
+      };
+    }
+  }
+
+  return {
+    reportType: endpoint.split('/').pop()?.toUpperCase() || 'REPORT',
+    reportTitle: 'Report',
+    reportPeriod: 'Selected Period',
+    isEmpty: true,
+    metrics: {},
+    records: [],
+  };
+}
+
 export async function getDailyReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/daily', { params: cleanParams(filters) });
-  return data;
+  return fetchDynamicReport('/api/asha/reports/daily', filters);
 }
 
-/**
- * Weekly Health & Operational Performance Report
- * GET /reports/weekly
- */
 export async function getWeeklyReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/weekly', { params: cleanParams(filters) });
-  return data;
+  return fetchDynamicReport('/api/asha/reports/weekly', filters);
 }
 
-/**
- * Monthly Comprehensive Health Analytics Report
- * GET /reports/monthly
- */
 export async function getMonthlyReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/monthly', { params: cleanParams(filters) });
-  return data;
+  return fetchDynamicReport('/api/asha/reports/monthly', filters);
 }
 
-/**
- * Annual Health System Performance Report
- * GET /reports/yearly
- */
 export async function getYearlyReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/yearly', { params: cleanParams(filters) });
-  return data;
+  return fetchDynamicReport('/api/asha/reports/yearly', filters);
 }
 
-/**
- * Epidemiological & Disease Surveillance Report
- * GET /reports/disease
- */
 export async function getDiseaseReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/disease', { params: cleanParams(filters) });
-  return data;
+  return fetchDynamicReport('/api/asha/reports/disease', filters);
 }
 
-/**
- * Pharmaceutical Inventory & Supply Chain Report
- * GET /reports/medicine
- */
-export async function getMedicineReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/medicine', { params: cleanParams(filters) });
-  return data;
-}
-
-/**
- * Demographic & Population Health Report
- * GET /reports/citizen
- */
 export async function getCitizenReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/citizen', { params: cleanParams(filters) });
-  return data;
+  return fetchDynamicReport('/api/asha/reports/citizen', filters);
 }
 
-/**
- * Hospital Infrastructure & Facility Report
- * GET /reports/hospital
- */
-export async function getHospitalReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/hospital', { params: cleanParams(filters) });
-  return data;
+export async function getVaccinationReport(filters = {}) {
+  return fetchDynamicReport('/api/asha/reports/vaccination', filters);
 }
 
-/**
- * Primary Health Centre (PHC) Assessment Report
- * GET /reports/phc
- */
-export async function getPhcReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/phc', { params: cleanParams(filters) });
-  return data;
+export async function getHomeVisitReport(filters = {}) {
+  return fetchDynamicReport('/api/asha/reports/home-visit', filters);
 }
 
-/**
- * Public Health Outreach & Campaign Performance Report
- * GET /reports/campaign
- */
-export async function getCampaignReport(filters = {}) {
-  const { data } = await apiClient.get('/reports/campaign', { params: cleanParams(filters) });
-  return data;
+export async function getPharmacistReport(type, filters = {}) {
+  return fetchDynamicReport(`/api/pharmacist/reports/${type}`, filters);
 }
 
-/**
- * Generic Report Fetcher routing by report type key
- */
 export async function fetchReportByType(type, filters = {}) {
   const normalizedKey = (type || '').toLowerCase();
   switch (normalizedKey) {
@@ -120,25 +128,21 @@ export async function fetchReportByType(type, filters = {}) {
     case 'annual':
       return getYearlyReport(filters);
     case 'disease':
+    case 'surveillance':
       return getDiseaseReport(filters);
-    case 'medicine':
-    case 'inventory':
-    case 'stock':
-    case 'expiry':
-    case 'sales':
-      return getMedicineReport(filters);
     case 'citizen':
-    case 'user':
-    case 'activity':
+    case 'citizens':
+    case 'family':
+    case 'demographic':
       return getCitizenReport(filters);
-    case 'hospital':
-      return getHospitalReport(filters);
-    case 'phc':
     case 'vaccination':
-    case 'district':
-      return getPhcReport(filters);
-    case 'campaign':
-      return getCampaignReport(filters);
+    case 'phc':
+    case 'immunization':
+      return getVaccinationReport(filters);
+    case 'home-visit':
+    case 'visit':
+    case 'visits':
+      return getHomeVisitReport(filters);
     default:
       return getDailyReport(filters);
   }

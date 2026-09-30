@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "b1234567-89ab-cdef-0123-456789abcdef",
+		"name": "HealthGuard AI - Phase 4 Gateway Security Integration",
+		"description": "Postman Collection for Spring Cloud API Gateway (Port 8080) testing JWT authentication, role-based access control, header propagation, microservice routing, health aggregation, and Swagger aggregation.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Public Auth Route (Login)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"citizen@healthguard.app\",\n  \"password\": \"password123\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Public route passing through Gateway to auth-service (8081). Bypasses JWT filter."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Citizen Route (Chat AI Analyze)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CITIZEN_TOKEN}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"citizenId\": 1,\n  \"message\": \"I have high fever and headache\",\n  \"language\": \"en\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/citizen/chat/analyze",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"citizen",
+						"chat",
+						"analyze"
+					]
+				},
+				"description": "Protected route requiring CITIZEN or ADMIN role. Gateway validates JWT and propagates X-User-Id, X-User-Email, X-User-Role to citizen-service (8082)."
+			},
+			"response": []
+		},
+		{
+			"name": "3. ASHA Worker Route (ASHA Dashboard)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{ASHA_TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/asha/dashboard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"asha",
+						"dashboard"
+					]
+				},
+				"description": "Protected route requiring ASHA_WORKER or ADMIN role. Routed to community-service (8083)."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Pharmacist Route (Medicine Management)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{PHARMACIST_TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/medicines",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"medicines"
+					]
+				},
+				"description": "Protected route requiring PHARMACIST or ADMIN role. Routed to pharmacist-service (8084)."
+			},
+			"response": []
+		},
+		{
+			"name": "5. Admin Route (System Analytics)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{ADMIN_TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/analytics",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"analytics"
+					]
+				},
+				"description": "Protected route requiring ADMIN role. Routed to admin-service (8085)."
+			},
+			"response": []
+		},
+		{
+			"name": "6. Health AI FastAPI Route (Predict Intent)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CITIZEN_TOKEN}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"text\": \"I have severe joint pain and fever\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/ai/health/predict-intent",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"ai",
+						"health",
+						"predict-intent"
+					]
+				},
+				"description": "Routed through Gateway (8080) to Python FastAPI health-ai-service (8000)."
+			},
+			"response": []
+		},
+		{
+			"name": "7. Error Case - Missing Token (401 Unauthorized)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/citizens/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"citizens",
+						"profile"
+					]
+				},
+				"description": "Tests 401 Unauthorized response from Gateway when Authorization header is missing."
+			},
+			"response": [
+				{
+					"name": "401 Unauthorized Response",
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"body": "{\n  \"status\": \"UNAUTHORIZED\",\n  \"message\": \"Missing Authorization Header\",\n  \"timestamp\": \"2026-08-18T00:00:00\"\n}"
+				}
+			]
+		},
+		{
+			"name": "8. Error Case - Insufficient Role (403 Forbidden)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CITIZEN_TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/admin/audit-logs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"admin",
+						"audit-logs"
+					]
+				},
+				"description": "Tests 403 Forbidden response when CITIZEN user attempts to access ADMIN restricted endpoint."
+			},
+			"response": [
+				{
+					"name": "403 Forbidden Response",
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"body": "{\n  \"status\": \"FORBIDDEN\",\n  \"message\": \"Access Denied: Insufficient Role Permissions\",\n  \"timestamp\": \"2026-08-18T00:00:00\"\n}"
+				}
+			]
+		},
+		{
+			"name": "9. Gateway Health Check Aggregation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/actuator/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"actuator",
+						"health"
+					]
+				},
+				"description": "Aggregates health checks across all 6 microservices (auth, citizen, community, pharmacist, admin, health-ai)."
+			},
+			"response": []
+		},
+		{
+			"name": "10. Gateway Swagger Aggregation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/swagger-ui.html",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"swagger-ui.html"
+					]
+				},
+				"description": "Centralized Swagger UI aggregating API documentation for all HealthGuard microservices."
+			},
+			"response": []
+		}
+	]
+}

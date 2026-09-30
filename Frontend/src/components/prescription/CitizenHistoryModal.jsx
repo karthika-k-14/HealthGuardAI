@@ -123,7 +123,7 @@ export default function CitizenHistoryModal({ open, onClose, citizenId, patientN
 
                 {item.notes && (
                   <p className="text-xs italic text-slate-500 dark:text-slate-400 pt-1">
-                    "{item.notes}"
+                    &quot;{item.notes}&quot;
                   </p>
                 )}
               </div>

@@ -9,6 +9,13 @@ import apiClient from './axios';
  * for the AI Public Health Intelligence widgets, not this admin listing.
  */
 export async function fetchAdminVillages() {
-  const { data } = await apiClient.get('/admin/villages');
-  return data;
+  try {
+    const { data } = await apiClient.get('/api/officer/villages');
+    const list = data?.data || data;
+    if (Array.isArray(list)) return list;
+  } catch (e) {
+    console.warn('Failed to fetch admin villages:', e?.message || e);
+  }
+
+  return [];
 }

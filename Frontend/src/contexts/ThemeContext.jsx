@@ -22,6 +22,21 @@ export function ThemeProvider({ children }) {
     setItem(STORAGE_KEYS.THEME, theme);
   }, [theme]);
 
+  // Load saved theme for Pharmacist on mount/session start
+  useEffect(() => {
+    const role = getItem(STORAGE_KEYS.ROLE);
+    const token = getItem(STORAGE_KEYS.TOKEN);
+    if (token && (role === 'PHARMACIST' || role === 'pharmacist')) {
+      import('../api/pharmacyApi').then(({ fetchPharmacistAppearanceSettings }) => {
+        fetchPharmacistAppearanceSettings().then((res) => {
+          if (res?.theme && (res.theme === 'dark' || res.theme === 'light')) {
+            setTheme(res.theme);
+          }
+        }).catch(() => {});
+      });
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       theme,

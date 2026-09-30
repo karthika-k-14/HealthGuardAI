@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './i18n';
+import 'leaflet/dist/leaflet.css';
 import { ThemeProvider } from './contexts/ThemeContext.jsx';
 import { LanguageProvider } from './contexts/LanguageContext.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';

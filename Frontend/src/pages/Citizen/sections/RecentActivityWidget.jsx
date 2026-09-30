@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { History, MessageCircle, Syringe, Hospital, Pill, HeartPulse } from 'lucide-react';
+import { History, MessageCircle, Hospital, Pill, HeartPulse } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { fetchRecentActivity } from '../../../api/citizenApi';
 import { Skeleton } from '../../../components/common/Skeleton';
 
 const TYPE_ICON = {
   chat: MessageCircle,
-  vaccination: Syringe,
   hospital: Hospital,
   medicine: Pill,
   healthscore: HeartPulse,
 };
 
 function timeAgo(iso, t) {
-  const diffMs = Date.now() - new Date(iso).getTime();
+  if (!iso) return t('Just now');
+  const date = new Date(iso);
+  if (isNaN(date.getTime())) return t('Just now');
+  const diffMs = Date.now() - date.getTime();
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
   if (hours < 1) return t('Just now');
   if (hours < 24) return `${hours}${t('h ago')}`;

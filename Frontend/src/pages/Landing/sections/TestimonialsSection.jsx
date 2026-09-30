@@ -41,7 +41,7 @@ export default function TestimonialsSection() {
                 className="glass-panel flex flex-col p-6"
               >
                 <Quote className="h-5 w-5 text-brand-400" aria-hidden="true" />
-                <p className="mt-3 flex-1 text-sm text-slate-600 dark:text-slate-300">"{item.quote}"</p>
+                <p className="mt-3 flex-1 text-sm text-slate-600 dark:text-slate-300">&quot;{item.quote}&quot;</p>
                 <div className="mt-4 flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, idx) => (
                     <Star

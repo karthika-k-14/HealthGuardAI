@@ -25,7 +25,8 @@ export default function TodaysTasksWidget() {
     };
   }, []);
 
-  const doneCount = tasks.filter((t) => t.done).length;
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
+  const doneCount = safeTasks.filter((t) => t.done).length;
 
   return (
     <div className="surface-card p-6">
@@ -34,11 +35,11 @@ export default function TodaysTasksWidget() {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-400">
             <ListChecks className="h-4 w-4" />
           </span>
-          <p className="text-sm font-semibold text-slate-900 dark:text-white">Today's Tasks</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">Today&apos;s Tasks</p>
         </div>
         {!isLoading && (
           <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            {doneCount}/{tasks.length} done
+            {doneCount}/{safeTasks.length} done
           </span>
         )}
       </div>
@@ -46,7 +47,7 @@ export default function TodaysTasksWidget() {
       <div className="mt-4 space-y-2.5">
         {isLoading && Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-11 w-full" />)}
         {!isLoading &&
-          tasks.map((task, i) => (
+          safeTasks.map((task, i) => (
             <motion.div
               key={task.id}
               initial={{ opacity: 0, x: -8 }}
@@ -76,3 +77,4 @@ export default function TodaysTasksWidget() {
     </div>
   );
 }
+

@@ -4,7 +4,7 @@ import { Sparkles, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Button from '../../../components/common/Button';
 import Badge from '../../../components/common/Badge';
-import { computeMockHealthRisk } from '../../../api/landingApi';
+import { computeHealthRisk } from '../../../api/landingApi';
 import { cn } from '../../../utils/cn';
 
 const BAND_TONE = { Low: 'brand', Moderate: 'amber', High: 'rose' };
@@ -34,11 +34,42 @@ export default function HealthRiskDemo() {
     { value: 'sedentary', label: t('Sedentary') },
   ];
 
+  const calculateRisk = async (targetAge, targetSymptoms, targetLifestyle) => {
+    const data = await computeHealthRisk({
+      age: targetAge,
+      symptoms: targetSymptoms,
+      lifestyle: targetLifestyle,
+    });
+    setResult(data);
+    return data;
+  };
+
   const runDemo = async () => {
     setIsLoading(true);
-    const data = await computeMockHealthRisk({ age, symptoms, lifestyle });
-    setResult(data);
+    await calculateRisk(age, symptoms, lifestyle);
     setIsLoading(false);
+  };
+
+  const handleAgeChange = (newAge) => {
+    setAge(newAge);
+    if (result) {
+      calculateRisk(newAge, symptoms, lifestyle);
+    }
+  };
+
+  const handleSymptomToggle = (symptomKey) => {
+    const nextSymptoms = toggleSymptom(symptoms, symptomKey);
+    setSymptoms(nextSymptoms);
+    if (result) {
+      calculateRisk(age, nextSymptoms, lifestyle);
+    }
+  };
+
+  const handleLifestyleChange = (newLifestyle) => {
+    setLifestyle(newLifestyle);
+    if (result) {
+      calculateRisk(age, symptoms, newLifestyle);
+    }
   };
 
   return (
@@ -64,7 +95,7 @@ export default function HealthRiskDemo() {
             min={1}
             max={90}
             value={age}
-            onChange={(e) => setAge(Number(e.target.value))}
+            onChange={(e) => handleAgeChange(Number(e.target.value))}
             className="w-full accent-brand-500"
           />
         </div>
@@ -76,7 +107,7 @@ export default function HealthRiskDemo() {
               <button
                 key={s.key}
                 type="button"
-                onClick={() => setSymptoms((prev) => toggleSymptom(prev, s.key))}
+                onClick={() => handleSymptomToggle(s.key)}
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   symptoms.includes(s.key)
@@ -97,7 +128,7 @@ export default function HealthRiskDemo() {
               <button
                 key={opt.value}
                 type="button"
-                onClick={() => setLifestyle(opt.value)}
+                onClick={() => handleLifestyleChange(opt.value)}
                 className={cn(
                   'rounded-lg border px-2 py-2 text-xs font-medium transition-colors',
                   lifestyle === opt.value
@@ -119,7 +150,7 @@ export default function HealthRiskDemo() {
         <AnimatePresence mode="wait">
           {result && (
             <motion.div
-              key={result.score}
+              key={`${result.score}-${lifestyle}-${age}-${symptoms.length}`}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
@@ -128,7 +159,16 @@ export default function HealthRiskDemo() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{t('Mock health score')}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                      {t('AI Health Risk Score')}
+                    </p>
+                    {result.ml_metadata && (
+                      <span className="rounded bg-brand-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-600 dark:text-brand-400">
+                        AI/ML
+                      </span>
+                    )}
+                  </div>
                   <p className="font-display text-3xl font-semibold text-slate-900 dark:text-white">
                     {result.score}
                     <span className="text-base font-normal text-slate-400">/100</span>

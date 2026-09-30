@@ -29,7 +29,7 @@ export default function TodaysAlertsWidget() {
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-signal-rose/10 text-signal-rose">
           <TriangleAlert className="h-4 w-4" />
         </span>
-        <p className="text-sm font-semibold text-slate-900 dark:text-white">Today's Alerts</p>
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">Today&apos;s Alerts</p>
       </div>
 
       <div className="mt-4 space-y-2.5">

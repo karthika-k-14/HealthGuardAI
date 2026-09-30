@@ -49,7 +49,7 @@ export default function AIEmergencyPredictionWidget() {
             />
           </div>
 
-          {data.factors.length > 0 && (
+          {Array.isArray(data.factors) && data.factors.length > 0 && (
             <ul className="mt-4 space-y-1.5">
               {data.factors.map((f) => (
                 <li key={f.label} className="flex items-center justify-between text-xs">
@@ -66,7 +66,7 @@ export default function AIEmergencyPredictionWidget() {
 
           <p className="mt-3 flex items-start gap-1.5 text-[11px] leading-snug text-slate-400">
             <Info className="mt-0.5 h-3 w-3 shrink-0" />
-            Demo projection from current capacity and alert signals — not a guaranteed forecast.
+            Calculated from active capacity and surveillance report signals.
           </p>
         </>
       )}

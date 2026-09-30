@@ -1,0 +1,70 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: citizen-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/healthguard}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:karthika@141}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    repair-on-migrate: true
+    validate-on-migrate: false
+    table: flyway_schema_history_citizen
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 5000
+            readTimeout: 10000
+            loggerLevel: full
+          health-ai-service:
+            connectTimeout: 5000
+            readTimeout: 10000
+            loggerLevel: full
+
+health:
+  ai:
+    service:
+      url: ${HEALTH_AI_SERVICE_URL:http://localhost:8000}
+
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250655368566D5971}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,actuator
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+logging:
+  level:
+    root: INFO
+    com.healthguard.citizen: DEBUG
+    com.healthguard.citizen.client: DEBUG
+    org.springframework.web: INFO

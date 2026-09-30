@@ -4,11 +4,9 @@ import { LayoutGrid } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 
 const WIDGET_OPTIONS = [
-  { key: 'commandCenter', label: 'AI Command Center' },
-  { key: 'healthScore', label: 'Platform Health Score' },
-  { key: 'liveActivity', label: 'Live Activity Feed' },
-  { key: 'globalSearch', label: 'Global Search' },
+  { key: 'smartNotifications', label: 'Smart Notifications' },
   { key: 'recommendations', label: 'AI Recommendations' },
+  { key: 'casePipeline', label: 'Case Pipeline' },
 ];
 
 /**
@@ -63,7 +61,7 @@ export default function DashboardCustomizationWidget() {
           </button>
         ))}
       </div>
-      <p className="mt-3 text-[11px] text-slate-400">Preview only — layout changes aren't persisted yet.</p>
+      <p className="mt-3 text-[11px] text-slate-400">Preview only — layout changes aren&apos;t persisted yet.</p>
     </div>
   );
 }

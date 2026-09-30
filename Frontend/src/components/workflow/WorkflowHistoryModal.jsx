@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { History, X, Clock, Calendar, CheckCircle2, User } from 'lucide-react';
+import { History, X } from 'lucide-react';
 import { getWorkflowHistory } from '../../api/workflowApi';
 import { Spinner } from '../common/Loader';
 

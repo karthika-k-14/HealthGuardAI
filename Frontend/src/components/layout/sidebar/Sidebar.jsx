@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   User,
@@ -8,39 +8,35 @@ import {
   LogOut,
   HeartPulse,
   MessageCircle,
-  History,
   BookOpenText,
   Hospital,
   Building2,
   Pill,
-  Syringe,
   Siren,
   Landmark,
   LineChart,
   Users,
-  KeyRound,
+  UserCheck,
   CalendarCheck,
-  Baby,
   Weight,
   TriangleAlert,
   FileText,
   Boxes,
-  ClipboardCheck,
   PackageX,
   Truck,
   ShoppingCart,
   BarChart3,
   Activity,
+  TrendingUp,
   MapPinned,
   Megaphone,
   Radio,
   BrainCircuit,
   ShieldCheck,
-  Bug,
   ServerCog,
   ScrollText,
   Stethoscope,
-  ArrowUpRight,
+  Utensils,
 } from 'lucide-react';
 import Logo from '../../common/Logo';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -61,17 +57,14 @@ function buildNavItems(role) {
 
   if (role === ROLES.CITIZEN) {
     base.push(
-      { label: 'My Health Profile', to: PATHS.CITIZEN_MY_PROFILE, icon: User },
       { label: 'AI Chat', to: PATHS.CITIZEN_CHAT, icon: MessageCircle, isChat: true },
       { label: 'Symptom Checker', to: PATHS.CITIZEN_SYMPTOM_CHECKER, icon: Stethoscope },
-      { label: 'Health Timeline', to: PATHS.CITIZEN_TIMELINE, icon: History },
       { label: 'Disease Awareness', to: PATHS.CITIZEN_DISEASES, icon: BookOpenText },
       { label: 'Hospitals', to: PATHS.CITIZEN_HOSPITALS, icon: Hospital },
       { label: 'Medicine Guide', to: PATHS.CITIZEN_MEDICINES, icon: Pill },
-      { label: 'Vaccinations', to: PATHS.CITIZEN_VACCINATIONS, icon: Syringe },
       { label: 'Emergency', to: PATHS.CITIZEN_EMERGENCY, icon: Siren },
       { label: 'Govt. Schemes', to: PATHS.CITIZEN_SCHEMES, icon: Landmark },
-      { label: 'Health Analytics', to: PATHS.CITIZEN_ANALYTICS, icon: LineChart }
+      { label: 'AI Nutrition Planner', to: PATHS.CITIZEN_ANALYTICS, icon: Utensils }
     );
   }
 
@@ -90,11 +83,9 @@ function buildNavItems(role) {
   if (role === ROLES.PHARMACIST) {
     base.push(
       { label: 'Inventory', to: PATHS.PHARMACIST_INVENTORY, icon: Boxes },
-      { label: 'PHC Referral Verification', to: PATHS.PHARMACIST_PRESCRIPTIONS, icon: ClipboardCheck },
-      { label: 'AI Assistant', to: PATHS.PHARMACIST_ASSISTANT, icon: MessageCircle, isChat: true },
+      { label: 'Medicine Forecasting', to: PATHS.PHARMACIST_FORECASTING, icon: TrendingUp },
       { label: 'Stock & Expiry', to: PATHS.PHARMACIST_STOCK_ALERTS, icon: PackageX },
-      { label: 'Suppliers', to: PATHS.PHARMACIST_SUPPLIERS, icon: Truck },
-      { label: 'Orders', to: PATHS.PHARMACIST_ORDERS, icon: ShoppingCart },
+      { label: 'Procurement', to: PATHS.PHARMACIST_ORDERS, icon: ShoppingCart },
       { label: 'Analytics', to: PATHS.PHARMACIST_ANALYTICS, icon: BarChart3 },
       { label: 'Reports', to: PATHS.PHARMACIST_REPORTS, icon: FileText }
     );
@@ -102,40 +93,28 @@ function buildNavItems(role) {
 
   if (role === ROLES.HEALTH_OFFICER) {
     base.push(
-      { label: 'Case Reviews', to: PATHS.OFFICER_CASE_REVIEWS, icon: ClipboardCheck },
-      { label: 'District Analytics', to: PATHS.OFFICER_ANALYTICS, icon: LineChart },
-      { label: 'Disease Monitoring', to: PATHS.OFFICER_DISEASE_MONITORING, icon: Activity },
-      { label: 'Health Map', to: PATHS.OFFICER_HEALTH_MAP, icon: MapPinned },
-      { label: 'Referral Monitoring', to: PATHS.OFFICER_REFERRALS, icon: Building2 },
-      { label: 'Vaccination Monitor', to: PATHS.OFFICER_VACCINATION, icon: Syringe },
+      { label: 'Disease Surveillance', to: PATHS.OFFICER_DISEASE_MONITORING, icon: ShieldCheck },
+      { label: 'Referral Management', to: PATHS.OFFICER_REFERRALS, icon: Building2 },
+      { label: 'Disease Intelligence', to: PATHS.OFFICER_ANALYTICS, icon: Activity },
+      { label: 'Outbreak Predictions', to: PATHS.OFFICER_HEALTH_MAP, icon: MapPinned },
       { label: 'Campaign Management', to: PATHS.OFFICER_CAMPAIGNS, icon: Megaphone },
-      { label: 'Emergency Center', to: PATHS.OFFICER_EMERGENCY, icon: Siren },
-      { label: 'AI Insights', to: PATHS.OFFICER_AI_INSIGHTS, icon: BrainCircuit, isChat: true },
-      { label: 'Reports', to: PATHS.OFFICER_REPORTS, icon: FileText }
+      { label: 'Broadcast Notification', to: PATHS.OFFICER_BROADCAST, icon: Radio }
     );
   }
 
   if (role === ROLES.ADMIN) {
     base.push(
       { label: 'User Management', to: PATHS.ADMIN_USERS, icon: Users },
-      { label: 'Staff Access Codes', to: PATHS.ADMIN_ACCESS_CODES, icon: KeyRound },
+      { label: 'Citizen Assignment', to: PATHS.ADMIN_CITIZEN_ASSIGNMENTS, icon: UserCheck },
       { label: 'Role Management', to: PATHS.ADMIN_ROLES, icon: ShieldCheck },
-      { label: 'Hospital Management', to: PATHS.ADMIN_HOSPITALS, icon: Building2 },
-      { label: 'PHC Management', to: PATHS.ADMIN_PHCS, icon: Building2 },
-      { label: 'Referral Management', to: PATHS.ADMIN_REFERRALS, icon: ArrowUpRight },
       { label: 'Campaign Management', to: PATHS.ADMIN_CAMPAIGNS, icon: Megaphone },
-      { label: 'Broadcast Notification', to: PATHS.ADMIN_BROADCAST, icon: Radio },
-      { label: 'Disease Management', to: PATHS.ADMIN_DISEASES, icon: Bug },
-      { label: 'Analytics', to: PATHS.ADMIN_ANALYTICS, icon: BarChart3 },
-      { label: 'System Monitoring', to: PATHS.ADMIN_SYSTEM, icon: ServerCog },
-      { label: 'Audit Logs', to: PATHS.ADMIN_AUDIT_LOGS, icon: ScrollText },
-      { label: 'AI Insights', to: PATHS.ADMIN_AI_INSIGHTS, icon: BrainCircuit, isChat: true },
-      { label: 'Reports', to: PATHS.ADMIN_REPORTS, icon: FileText }
+      { label: 'System Monitoring', to: PATHS.ADMIN_SYSTEM, icon: ServerCog }
     );
   }
 
+
   base.push(
-    { label: 'Notifications', to: PATHS.NOTIFICATIONS, icon: Bell },
+    { label: 'Notifications', to: role === ROLES.ADMIN ? PATHS.ADMIN_NOTIFICATIONS : (role === ROLES.PHARMACIST ? PATHS.PHARMACIST_NOTIFICATIONS : PATHS.NOTIFICATIONS), icon: Bell },
     { label: 'Profile', to: PATHS.PROFILE, icon: User },
     { label: 'Settings', to: PATHS.SETTINGS, icon: Settings }
   );
@@ -148,6 +127,13 @@ export default function Sidebar({ mobileOpen, onClose }) {
   const { hasUnread } = useChat();
   const { t } = useLanguage();
   const navItems = useMemo(() => buildNavItems(role), [role]);
+
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login', { replace: true, state: null });
+  };
 
   return (
     <>
@@ -205,7 +191,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
         <div className="border-t border-slate-200/70 p-4 dark:border-white/10">
           <button
             type="button"
-            onClick={logout}
+            onClick={handleSignOut}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
           >
             <LogOut className="h-4 w-4" aria-hidden="true" />

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
   Workflow,
-  ClipboardList,
   CheckCircle2,
   Clock,
   UserCheck,
@@ -10,9 +9,7 @@ import {
   GitPullRequest,
   Search,
   Plus,
-  Filter,
   AlertTriangle,
-  ArrowRight,
 } from 'lucide-react';
 import {
   getAllWorkflows,

@@ -31,12 +31,15 @@ export default function RecentActivitiesWidget() {
 
       <ol className="mt-4 space-y-3 border-l border-slate-200/70 pl-4 dark:border-white/10">
         {isLoading && Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+        {!isLoading && activities.length === 0 && (
+          <p className="text-sm text-slate-400">No recent activities logged.</p>
+        )}
         {!isLoading &&
           activities.map((a) => (
             <li key={a.id} className="relative">
               <span className="absolute -left-[21px] top-1 h-2 w-2 rounded-full bg-brand-500" />
               <p className="text-sm text-slate-700 dark:text-slate-200">{a.label}</p>
-              <p className="text-xs text-slate-400">{new Date(a.date).toLocaleDateString()}</p>
+              <p className="text-xs text-slate-400">{a.date ? new Date(a.date).toLocaleDateString() : 'Recently'}</p>
             </li>
           ))}
       </ol>

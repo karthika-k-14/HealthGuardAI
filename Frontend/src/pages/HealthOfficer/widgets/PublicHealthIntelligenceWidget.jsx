@@ -9,13 +9,7 @@ import { SkeletonGrid } from '../../../components/common/Skeleton';
  * AI Public Health Intelligence Center.
  *
  * Groups AI-driven analytics by village for the Health Officer, fed
- * entirely by fetchVillageAnalytics() (see api/villageApi.js). Every
- * village name, risk level, and count rendered here comes from that
- * response — nothing is hardcoded. Today that resolves to realistic
- * mock data for Coimbatore, Tamil Nadu; once a real backend is
- * connected, fetchVillageAnalytics is the only place that changes —
- * this component just renders whatever `villages` array comes back,
- * so no UI changes are required after backend integration.
+ * entirely by live surveillance statistics via fetchVillageAnalytics().
  */
 export default function PublicHealthIntelligenceWidget() {
   const [data, setData] = useState(null);

@@ -10,7 +10,6 @@ export const STORAGE_KEYS = {
   ONBOARDING_COMPLETED: 'hg_onboarding_completed',
   CHAT_CITIZEN: 'hg_chat_citizen',
   CHAT_ASHA: 'hg_chat_asha',
-  CHAT_PHARMACIST: 'hg_chat_pharmacist',
   CHAT_OFFICER: 'hg_chat_officer',
   CHAT_ADMIN: 'hg_chat_admin',
 };

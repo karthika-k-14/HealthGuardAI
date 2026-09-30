@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, RotateCcw, Calendar, MapPin, Building2, UserCheck, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Filter, RotateCcw, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import Button from '../common/Button';
 
 export default function ReportFilters({ filters, onApplyFilters, onResetFilters }) {

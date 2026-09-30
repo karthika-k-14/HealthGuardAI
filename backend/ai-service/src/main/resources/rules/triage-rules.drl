@@ -1,0 +1,117 @@
+package com.healthguard.ai.rules;
+
+import com.healthguard.ai.dto.TriageFact;
+
+rule "Emergency - Chest Pain and Breathing Difficulty"
+    dialect "mvel"
+    when
+        $fact : TriageFact( (chestPain == true && shortnessOfBreath == true) || chestPressure == true )
+    then
+        $fact.setRiskLevel("EMERGENCY");
+        $fact.setEmergencyAlert(true);
+        $fact.addFlag("Chest pain / severe respiratory distress detected");
+end
+
+rule "Emergency - Stroke Symptoms"
+    dialect "mvel"
+    when
+        $fact : TriageFact( strokeSymptoms == true || suddenParalysis == true || suddenWeakness == true )
+    then
+        $fact.setRiskLevel("EMERGENCY");
+        $fact.setEmergencyAlert(true);
+        $fact.addFlag("Stroke warning sign detected (FAST)");
+end
+
+rule "Emergency - Trauma and Major Bleeding"
+    dialect "mvel"
+    when
+        $fact : TriageFact( severeBleeding == true || majorTrauma == true || severeBurn == true )
+    then
+        $fact.setRiskLevel("EMERGENCY");
+        $fact.setEmergencyAlert(true);
+        $fact.addFlag("Severe hemorrhage or major trauma");
+end
+
+rule "Emergency - Neurological Loss of Consciousness or Seizure"
+    dialect "mvel"
+    when
+        $fact : TriageFact( lossOfConsciousness == true || seizure == true )
+    then
+        $fact.setRiskLevel("EMERGENCY");
+        $fact.setEmergencyAlert(true);
+        $fact.addFlag("Neurological emergency (loss of consciousness / seizure)");
+end
+
+rule "Emergency - Severe Allergy / Anaphylaxis"
+    dialect "mvel"
+    when
+        $fact : TriageFact( severeAllergicReaction == true || throatSwelling == true || facialSwelling == true )
+    then
+        $fact.setRiskLevel("EMERGENCY");
+        $fact.setEmergencyAlert(true);
+        $fact.addFlag("Anaphylaxis / airway-threatening allergic reaction");
+end
+
+rule "Emergency - Mental Health Danger"
+    dialect "mvel"
+    when
+        $fact : TriageFact( suicidalThoughts == true || selfHarmIntent == true )
+    then
+        $fact.setRiskLevel("EMERGENCY");
+        $fact.setEmergencyAlert(true);
+        $fact.addFlag("Mental health emergency detected");
+end
+
+rule "High Risk - Back Pain with Leg Numbness"
+    dialect "mvel"
+    when
+        $fact : TriageFact( riskLevel == null, backPain == true && legNumbness == true )
+    then
+        $fact.setRiskLevel("HIGH");
+        $fact.addFlag("Possible spinal cord / nerve compression sign");
+end
+
+rule "High Risk - Jaundice and Hepatic Signs"
+    dialect "mvel"
+    when
+        $fact : TriageFact( riskLevel == null, jaundice == true || yellowEyes == true )
+    then
+        $fact.setRiskLevel("HIGH");
+        $fact.addFlag("Jaundice / acute hepatobiliary signs detected");
+end
+
+rule "High Risk - High Fever with Confusion or Severe Pain"
+    dialect "mvel"
+    when
+        $fact : TriageFact( riskLevel == null, (fever == true && feverDays >= 5) || (painScore >= 8) )
+    then
+        $fact.setRiskLevel("HIGH");
+        $fact.addFlag("Prolonged high fever or severe pain (8+/10)");
+end
+
+rule "Moderate Risk - Fever Duration 3-4 Days"
+    dialect "mvel"
+    when
+        $fact : TriageFact( riskLevel == null, fever == true && feverDays >= 3 && feverDays < 5 )
+    then
+        $fact.setRiskLevel("MODERATE");
+        $fact.addFlag("Fever persisting > 3 days");
+end
+
+rule "Moderate Risk - Persistent Moderate Symptoms"
+    dialect "mvel"
+    when
+        $fact : TriageFact( riskLevel == null, painScore >= 5 && painScore < 8 )
+    then
+        $fact.setRiskLevel("MODERATE");
+        $fact.addFlag("Moderate symptom severity (5-7/10)");
+end
+
+rule "Low Risk - Minor Symptoms"
+    dialect "mvel"
+    when
+        $fact : TriageFact( riskLevel == null )
+    then
+        $fact.setRiskLevel("LOW");
+        $fact.addFlag("Mild / routine symptom profile");
+end

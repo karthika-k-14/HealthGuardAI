@@ -1,0 +1,56 @@
+# Node
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+.npm/
+
+# Virtual Environments
+*venv*/
+venv/
+.venv/
+venv312/
+**/venv312/
+env/
+env.bak/
+venv.bak/
+
+# Logs & scratch
+*.log
+lint*.txt
+scratch/
+tools/
+.metadata/
+**/.metadata/
+BOOT-INF/
+**/BOOT-INF/
+login.json
+*.cmd
+11')
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+.env
+.pytest_cache/
+
+# Java & Maven
+target/
+**/target/
+*.class
+*.jar
+
+# IDE & Editor
+.idea/
+.vscode/
+**/.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

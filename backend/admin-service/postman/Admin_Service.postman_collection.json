@@ -1,0 +1,729 @@
+{
+	"info": {
+		"_postman_id": "0d1e2f3a-4b5c-6d7e-8f9a-0b1c2d3e4f5a",
+		"name": "Admin Service API - HealthGuard AI",
+		"description": "Complete Postman Collection for HealthGuard AI Admin Service Microservice (Port 8085)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Admin Management",
+			"item": [
+				{
+					"name": "Get Admin Dashboard Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get System Users List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health Officer Management",
+			"item": [
+				{
+					"name": "Create Health Officer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"officerId\": \"HO-001\",\n  \"fullName\": \"Dr. Rajesh Varma\",\n  \"email\": \"rajesh.varma@example.com\",\n  \"mobileNumber\": \"9876543210\",\n  \"district\": \"Central\",\n  \"designation\": \"District Medical Officer\",\n  \"status\": \"ACTIVE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/health-officers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"health-officers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Health Officers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/health-officers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"health-officers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Health Officer by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/health-officers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"health-officers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Health Officer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Dr. Rajesh Varma Updated\",\n  \"designation\": \"Chief Medical Officer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/health-officers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"health-officers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Health Officer",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/health-officers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"health-officers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pharmacist Management",
+			"item": [
+				{
+					"name": "Create Pharmacist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pharmacistId\": \"PHARM-001\",\n  \"fullName\": \"Srinivas Rao\",\n  \"email\": \"srinivas.rao@example.com\",\n  \"mobileNumber\": \"9876543211\",\n  \"pharmacyName\": \"Central Health Pharmacy\",\n  \"licenseNumber\": \"LIC-123456\",\n  \"status\": \"ACTIVE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pharmacists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pharmacists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Pharmacists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pharmacists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pharmacists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pharmacist by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pharmacists/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pharmacists",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Pharmacist",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pharmacyName\": \"Central City Wellness Pharmacy\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pharmacists/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pharmacists",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Pharmacist",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pharmacists/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pharmacists",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Medicine Management",
+			"item": [
+				{
+					"name": "Create Medicine",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"medicineCode\": \"MED-PAR-500\",\n  \"medicineName\": \"Paracetamol 500mg\",\n  \"category\": \"Analgesic\",\n  \"manufacturer\": \"PharmaCorp\",\n  \"batchNumber\": \"BATCH-2026-A\",\n  \"expiryDate\": \"2028-12-31\",\n  \"quantity\": 250,\n  \"price\": 15.50\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/medicines",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"medicines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Medicines",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/medicines",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"medicines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Medicine by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/medicines/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"medicines",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Medicine",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"quantity\": 300,\n  \"price\": 16.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/medicines/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"medicines",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Medicine",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/medicines/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"medicines",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Prescription Management",
+			"item": [
+				{
+					"name": "Create Prescription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"citizenId\": 101,\n  \"doctorName\": \"Dr. Sarah Jenkins\",\n  \"medicineName\": \"Paracetamol 500mg\",\n  \"dosage\": \"1 tablet every 8 hours\",\n  \"duration\": \"5 days\",\n  \"status\": \"ACTIVE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/prescriptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"prescriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Prescriptions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/prescriptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"prescriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Prescription by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/prescriptions/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"prescriptions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Prescription",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"COMPLETED\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/prescriptions/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"prescriptions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Prescription",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/prescriptions/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"prescriptions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Analytics & Reports",
+			"item": [
+				{
+					"name": "Get Analytics Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/analytics/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"analytics",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Medicine Stock Analytics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/analytics/medicine-stock",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"analytics",
+								"medicine-stock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get System Analytical Reports",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/analytics/reports",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"analytics",
+								"reports"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Actuator",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/actuator/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8085"
+		},
+		{
+			"key": "jwt_token",
+			"value": "YOUR_JWT_TOKEN_FROM_AUTH_SERVICE"
+		}
+	]
+}

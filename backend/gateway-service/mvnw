@@ -1,0 +1,11 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Maven Start Up Shell Script for Gateway Service
+# ----------------------------------------------------------------------------
+
+BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -f "$BASE_DIR/.mvn/wrapper/maven-wrapper.jar" ]; then
+    exec java -jar "$BASE_DIR/.mvn/wrapper/maven-wrapper.jar" "$@"
+else
+    exec mvn "$@"
+fi

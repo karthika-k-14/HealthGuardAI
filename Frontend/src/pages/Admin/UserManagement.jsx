@@ -3,27 +3,19 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Search, Plus, Pencil, Trash2, Eye, Power, Users, Copy } from 'lucide-react';
 import { fetchUsers, addUser, updateUser, deleteUser, toggleUserStatus } from '../../api/adminApi';
-import { ROLE_LABELS, ROLES } from '../../constants/roles';
+import { ROLE_LABELS } from '../../constants/roles';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
 import { SkeletonGrid } from '../../components/common/Skeleton';
 
-const ROLE_FILTERS = ['All', 'citizen', 'asha', 'pharmacist', 'officer', 'admin'];
-// Admin cannot be created from User Management — one seeded/default
-// admin account only, per the spec.
-const CREATABLE_ROLES = ['citizen', 'asha', 'pharmacist', 'officer'];
+const ROLE_FILTERS = ['All', 'citizen', 'asha', 'pharmacist', 'officer'];
+const CREATABLE_ROLES = ['asha', 'officer', 'pharmacist'];
 const STATUS_FILTERS = ['All', 'active', 'disabled'];
 const STATUS_TONE = { active: 'brand', disabled: 'rose' };
 
-// Add/Edit form — staff roles (ASHA/Officer/Pharmacist) collect
-// Employee ID + Assigned PHC; Citizens collect Village/District
-// instead. Admin generates the account; there is no password field
-// here at all (see spec: "System generates the account").
 function UserFormModal({ open, onClose, onSubmit, defaultValues, title, isEdit }) {
-  const { register, handleSubmit, reset, watch, formState: { isSubmitting } } = useForm({ defaultValues });
-  const selectedRole = watch('role');
-  const isStaffRole = selectedRole && selectedRole !== ROLES.CITIZEN;
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm({ defaultValues });
 
   useEffect(() => {
     reset(defaultValues);
@@ -38,31 +30,19 @@ function UserFormModal({ open, onClose, onSubmit, defaultValues, title, isEdit }
         })}
         className="space-y-3"
       >
-        <input {...register('name', { required: true })} placeholder="Full name" className="input-field text-sm" />
-        <input {...register('email', { required: true })} type="email" placeholder="Email address" className="input-field text-sm" disabled={isEdit} />
-        <input {...register('phone')} type="tel" placeholder="Phone number" className="input-field text-sm" />
+        <input {...register('name', { required: true })} placeholder="Full Name" className="input-field text-sm" />
+        <input {...register('email', { required: true })} type="email" placeholder="Email Address" className="input-field text-sm" disabled={isEdit} />
+        <input {...register('phone', { required: true })} type="tel" placeholder="Phone Number" className="input-field text-sm" />
         <select {...register('role', { required: true })} className="input-field text-sm" disabled={isEdit}>
-          {(isEdit ? ROLE_FILTERS.filter((r) => r !== 'All') : CREATABLE_ROLES).map((r) => (
-            <option key={r} value={r}>{ROLE_LABELS[r]}</option>
+          {(isEdit ? ROLE_FILTERS.filter((r) => r !== 'All' && r !== 'citizen') : CREATABLE_ROLES).map((r) => (
+            <option key={r} value={r}>{ROLE_LABELS[r] || r}</option>
           ))}
         </select>
-
-        {isStaffRole && (
-          <>
-            <input {...register('employeeId')} placeholder="Employee ID" className="input-field text-sm" />
-            <input {...register('assignedPHC')} placeholder="Assigned PHC" className="input-field text-sm" />
-            <input {...register('assignedVillage')} placeholder="Assigned Village/District" className="input-field text-sm" />
-          </>
-        )}
-        {!isStaffRole && (
-          <>
-            <input {...register('assignedVillage')} placeholder="Village" className="input-field text-sm" />
-            <input {...register('district')} placeholder="District" className="input-field text-sm" />
-          </>
-        )}
+        <input {...register('village', { required: true })} placeholder="Village" className="input-field text-sm" />
+        <input {...register('district', { required: true })} placeholder="District" className="input-field text-sm" />
 
         <Button type="submit" variant="primary" isLoading={isSubmitting} className="w-full text-sm">
-          Save
+          Save Staff Account
         </Button>
       </form>
     </Modal>
@@ -130,9 +110,12 @@ export default function UserManagement() {
 
   const handleAdd = async (values) => {
     try {
-      const { user, generatedPassword } = await addUser(values);
-      toast.success('Account created');
-      setNewCredentials({ name: user.name, email: user.email, password: generatedPassword });
+      const res = await addUser(values);
+      toast.success('User account created successfully.');
+      toast.success('Invitation email sent successfully.');
+      if (res?.generatedPassword && res?.user) {
+        setNewCredentials({ name: res.user.name, email: res.user.email, password: res.generatedPassword });
+      }
       load();
     } catch (err) {
       toast.error(err.message || 'Unable to create account');
@@ -211,8 +194,9 @@ export default function UserManagement() {
 
       {!isLoading && users.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {users.map((u) => (
-            <div key={u.id} className="surface-card space-y-2.5 p-4">
+          {users.map((u, idx) => (
+            <div key={`${u.id}_${idx}`} className="surface-card space-y-2.5 p-4">
+
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-xs font-semibold text-white">

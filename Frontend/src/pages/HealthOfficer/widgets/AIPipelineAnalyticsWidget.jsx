@@ -23,8 +23,13 @@ export default function AIPipelineAnalyticsWidget() {
 
   if (!data) return <SkeletonCard className="h-72" />;
 
-  const maxCategory = Math.max(1, ...data.diseaseCategoryBreakdown.map((d) => d.count));
-  const maxWard = Math.max(1, ...data.wardTrends.map((w) => w.count));
+  const diseaseCategoryBreakdown = Array.isArray(data.diseaseCategoryBreakdown) ? data.diseaseCategoryBreakdown : [];
+  const wardTrends = Array.isArray(data.wardTrends) ? data.wardTrends : [];
+  const urgencyDistribution = Array.isArray(data.urgencyDistribution) ? data.urgencyDistribution : [];
+  const escalationAnalytics = data.escalationAnalytics || { criticalEscalations: 0, highEscalations: 0, criticalEscalationRate: 0 };
+
+  const maxCategory = Math.max(1, ...diseaseCategoryBreakdown.map((d) => d.count || 0));
+  const maxWard = Math.max(1, ...wardTrends.map((w) => w.count || 0));
 
   return (
     <div className="surface-card space-y-5 p-5">
@@ -41,7 +46,7 @@ export default function AIPipelineAnalyticsWidget() {
             <Tags className="h-3.5 w-3.5" /> Disease category breakdown
           </p>
           <div className="space-y-2">
-            {data.diseaseCategoryBreakdown.map((d) => (
+            {diseaseCategoryBreakdown.map((d) => (
               <div key={d.category} className="text-xs">
                 <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
                   <span>{d.category}</span>
@@ -55,7 +60,7 @@ export default function AIPipelineAnalyticsWidget() {
                 </div>
               </div>
             ))}
-            {data.diseaseCategoryBreakdown.length === 0 && (
+            {diseaseCategoryBreakdown.length === 0 && (
               <p className="text-xs text-slate-400">No classified cases yet.</p>
             )}
           </div>
@@ -66,7 +71,7 @@ export default function AIPipelineAnalyticsWidget() {
             <Activity className="h-3.5 w-3.5" /> Urgency distribution
           </p>
           <div className="flex flex-wrap gap-2">
-            {data.urgencyDistribution.map((u) => (
+            {urgencyDistribution.map((u) => (
               <Badge key={u.level} tone={URGENCY_TONE[u.level]}>
                 {u.level}: {u.count}
               </Badge>
@@ -78,15 +83,15 @@ export default function AIPipelineAnalyticsWidget() {
           </p>
           <div className="grid grid-cols-3 gap-2 text-center text-xs">
             <div className="rounded-lg bg-slate-50 p-2 dark:bg-white/5">
-              <p className="text-base font-semibold text-rose-600 dark:text-rose-400">{data.escalationAnalytics.criticalEscalations}</p>
+              <p className="text-base font-semibold text-rose-600 dark:text-rose-400">{escalationAnalytics.criticalEscalations ?? 0}</p>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">Critical</p>
             </div>
             <div className="rounded-lg bg-slate-50 p-2 dark:bg-white/5">
-              <p className="text-base font-semibold text-amber-600 dark:text-amber-400">{data.escalationAnalytics.highEscalations}</p>
+              <p className="text-base font-semibold text-amber-600 dark:text-amber-400">{escalationAnalytics.highEscalations ?? 0}</p>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">High</p>
             </div>
             <div className="rounded-lg bg-slate-50 p-2 dark:bg-white/5">
-              <p className="text-base font-semibold text-slate-700 dark:text-slate-200">{data.escalationAnalytics.criticalEscalationRate}%</p>
+              <p className="text-base font-semibold text-slate-700 dark:text-slate-200">{escalationAnalytics.criticalEscalationRate ?? 0}%</p>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">Critical rate</p>
             </div>
           </div>
@@ -98,7 +103,7 @@ export default function AIPipelineAnalyticsWidget() {
           <MapPinned className="h-3.5 w-3.5" /> Ward-wise trends
         </p>
         <div className="space-y-2">
-          {data.wardTrends.map((w) => (
+          {wardTrends.map((w) => (
             <div key={w.ward} className="text-xs">
               <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
                 <span>{w.ward}</span>
@@ -109,7 +114,7 @@ export default function AIPipelineAnalyticsWidget() {
               </div>
             </div>
           ))}
-          {data.wardTrends.length === 0 && <p className="text-xs text-slate-400">No ward data yet.</p>}
+          {wardTrends.length === 0 && <p className="text-xs text-slate-400">No ward data yet.</p>}
         </div>
       </div>
     </div>

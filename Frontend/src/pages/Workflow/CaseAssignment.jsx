@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { UserCheck, Search, Filter } from 'lucide-react';
+import { UserCheck, Search } from 'lucide-react';
 import { getAllWorkflows } from '../../api/workflowApi';
 import { Spinner } from '../../components/common/Loader';
 import CaseAssignmentModal from '../../components/workflow/CaseAssignmentModal';

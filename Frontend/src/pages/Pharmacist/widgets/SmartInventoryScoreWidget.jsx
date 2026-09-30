@@ -45,7 +45,7 @@ export default function SmartInventoryScoreWidget() {
             </p>
           </div>
           <ul className="mt-4 space-y-2">
-            {data.breakdown.map((item) => (
+            {(data.breakdown || []).map((item) => (
               <li key={item.label} className="flex items-center justify-between text-xs">
                 <span className="text-slate-500 dark:text-slate-400">{item.label}</span>
                 <span className="font-medium text-slate-700 dark:text-slate-200">{item.value}</span>

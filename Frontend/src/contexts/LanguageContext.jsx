@@ -24,6 +24,23 @@ export function LanguageProvider({ children }) {
     }
   }, [languageCode, i18n]);
 
+  // Load saved language for Pharmacist on mount/session start
+  useEffect(() => {
+    const role = getItem(STORAGE_KEYS.ROLE);
+    const token = getItem(STORAGE_KEYS.TOKEN);
+    if (token && (role === 'PHARMACIST' || role === 'pharmacist')) {
+      import('../api/pharmacyApi').then(({ fetchPharmacistLanguageSettings }) => {
+        fetchPharmacistLanguageSettings().then((res) => {
+          if (res?.language) {
+            const codeMap = { ENGLISH: 'en', TAMIL: 'ta', HINDI: 'hi', ODIA: 'or' };
+            const code = codeMap[res.language.toUpperCase()] || 'en';
+            setLanguageCode(code);
+          }
+        }).catch(() => {});
+      });
+    }
+  }, []);
+
   const t = useMemo(() => {
     return (key, options) => {
       if (!key) return '';
